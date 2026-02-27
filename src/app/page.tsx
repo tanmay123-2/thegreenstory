@@ -1,25 +1,89 @@
+"use client";
+
+import { useState } from "react";
+
 export default function Home() {
+  // Array of your products
+  const products = [
+    {
+      id: 1,
+      name: "Ubtan Body Wash",
+      description: "Bridal Glow & Deep Cleansing - 200ml",
+      price: "₹550",
+      image: "https://via.placeholder.com/300x400?text=Ubtan+Body+Wash"
+    },
+    {
+      id: 2,
+      name: "Hair Toner",
+      description: "Root Stimulator & Refresher - 100ml",
+      price: "₹350",
+      image: "https://via.placeholder.com/300x400?text=Hair+Toner"
+    },
+    {
+      id: 3,
+      name: "Onion Hair Oil",
+      description: "With Black Seed & Shikakai - 100ml",
+      price: "₹350",
+      image: "https://via.placeholder.com/300x400?text=Onion+Hair+Oil"
+    },
+    {
+      id: 4,
+      name: "Amla & Reetha Shampoo",
+      description: "Gentle Herbal Cleanser - 200ml",
+      price: "₹550",
+      image: "https://via.placeholder.com/300x400?text=Amla+Shampoo"
+    }
+  ];
+
   return (
-    <main style={{ padding: '50px', textAlign: 'center', backgroundColor: '#f9fdf9', minHeight: '100vh', fontFamily: 'sans-serif' }}>
-      <header style={{ marginBottom: '40px' }}>
-        <h1 style={{ color: '#2d6a4f', fontSize: '3rem' }}>The Green Story</h1>
-        <p style={{ color: '#40916c', fontSize: '1.2rem' }}>Earth-friendly products for a better tomorrow.</p>
+    <main>
+      {/* Hero Section */}
+      <header className="hero">
+        <div className="hero-content">
+          <h2>Luxury Ayurvedic Care</h2>
+          <p>Nature-backed, transparent, and gentle formulas for your hair and body.</p>
+          <button className="btn-primary">Shop The Collection</button>
+        </div>
       </header>
 
-      <section style={{ maxWidth: '400px', margin: '0 auto', backgroundColor: 'white', padding: '20px', borderRadius: '15px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
-        <h2 style={{ color: '#1b4332' }}>Featured Product</h2>
-        <div style={{ padding: '20px' }}>
-          <div style={{ fontSize: '50px' }}>🌿</div>
-          <h3>Bamboo Toothbrush</h3>
-          <p style={{ color: '#52b788', fontWeight: 'bold', fontSize: '1.5rem' }}>₹199</p>
-          <button style={{ backgroundColor: '#2d6a4f', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold' }}>
-            Buy Now
-          </button>
+      {/* Bestsellers Section */}
+      <section className="products-section">
+        <h2 className="section-title">Our Bestsellers</h2>
+        <div className="product-grid">
+          {products.map((product) => (
+            <div className="product-card" key={product.id}>
+              <img src={product.image} alt={product.name} />
+              <div className="product-info">
+                <h3>{product.name}</h3>
+                <p>{product.description}</p>
+                <span className="price">{product.price}</span>
+                <button 
+                  className="add-to-cart" 
+                  onClick={() => alert(`Added ${product.name} to cart!`)}
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      <footer style={{ marginTop: '50px', color: '#777', fontSize: '0.8rem' }}>
-        © 2026 The Green Story - Sustainably Crafted
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-col">
+            <h4>About</h4>
+            <a href="#">Our Roots</a>
+            <a href="#">Sourcing Transparency</a>
+          </div>
+          <div className="footer-col">
+            <h4>Help</h4>
+            <a href="#">Contact Us</a>
+            <a href="#">FAQ</a>
+            <a href="#">Shipping & Returns</a>
+          </div>
+        </div>
       </footer>
     </main>
   );
