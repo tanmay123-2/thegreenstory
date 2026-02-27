@@ -3,33 +3,64 @@ import ProductCard from '@/components/ProductCard';
 
 export default function Shop() {
     return (
-        <div className="pt-24 pb-16 min-h-screen">
-            <div className="max-w-7xl mx-auto px-6">
-                <header className="mb-16 text-center">
-                    <h1 className="text-4xl md:text-5xl font-serif text-charcoal mb-4">All Products</h1>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
-                        Explore our complete collection of botanical skincare. Every product is carefully formulated to work with your skin's natural healing abilities.
+        <div className="bg-brand-gray min-h-screen">
+            {/* Header Banner */}
+            <header className="bg-brand-white py-16 px-6 border-b border-brand-gray-dark/10">
+                <div className="max-w-7xl mx-auto">
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mb-4">All Formulations</h1>
+                    <p className="text-[13px] text-brand-gray-dark font-medium max-w-2xl leading-relaxed">
+                        Browse our complete range of science-backed skincare. Filter by your specific concerns or search for targeted active ingredients.
                     </p>
-                </header>
+                </div>
+            </header>
 
-                <div className="flex justify-between items-center mb-10 border-b border-sand-200 pb-4">
-                    <p className="text-sm font-medium text-gray-500 uppercase tracking-widest">{products.length} Products</p>
+            <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row gap-8">
 
-                    <div className="flex gap-6 text-sm">
-                        <button className="flex items-center gap-2 hover:text-green-700 transition">
-                            Filter
-                        </button>
-                        <button className="flex items-center gap-2 hover:text-green-700 transition">
-                            Sort
-                        </button>
+                {/* Sidebar Filters */}
+                <aside className="w-full md:w-64 flex-shrink-0">
+                    <div className="sticky top-24 space-y-8">
+                        <div>
+                            <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4 border-b border-brand-gray-dark/10 pb-2">Filter By Concern</h3>
+                            <ul className="space-y-3 text-[13px] font-medium text-brand-gray-dark">
+                                <li className="flex items-center gap-3">
+                                    <input type="checkbox" id="acne" className="accent-brand-black w-4 h-4 cursor-pointer" />
+                                    <label htmlFor="acne" className="cursor-pointer hover:text-brand-black transition-colors">Acne Control</label>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <input type="checkbox" id="tone" className="accent-brand-black w-4 h-4 cursor-pointer" />
+                                    <label htmlFor="tone" className="cursor-pointer hover:text-brand-black transition-colors">Uneven Tone</label>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <input type="checkbox" id="dryness" className="accent-brand-black w-4 h-4 cursor-pointer" />
+                                    <label htmlFor="dryness" className="cursor-pointer hover:text-brand-black transition-colors">Dryness</label>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <input type="checkbox" id="aging" className="accent-brand-black w-4 h-4 cursor-pointer" />
+                                    <label htmlFor="aging" className="cursor-pointer hover:text-brand-black transition-colors">Anti-Aging</label>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
+                </aside>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
-                    {products.map((product) => (
-                        <ProductCard key={product.id} product={product} />
-                    ))}
-                </div>
+                {/* Product Grid */}
+                <main className="flex-1">
+                    {/* Utility Bar */}
+                    <div className="flex justify-between items-center mb-8 bg-brand-white p-4 border border-brand-gray-dark/10">
+                        <p className="text-[11px] font-bold text-brand-gray-dark uppercase tracking-widest">Showing {products.length} Products</p>
+                        <select className="bg-transparent text-[11px] font-bold uppercase tracking-widest border-none cursor-pointer focus:outline-none">
+                            <option>Sort By: Featured</option>
+                            <option>Price: Low to High</option>
+                            <option>Price: High to Low</option>
+                        </select>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {products.map((product) => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
+                    </div>
+                </main>
             </div>
         </div>
     );
