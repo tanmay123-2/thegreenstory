@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { CartProvider } from "../context/CartContext";
+import CartDrawer from "../components/CartDrawer";
 
-// This helps your site show up correctly on Google
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
 export const metadata: Metadata = {
-  title: "The Green Story",
+  title: "The Green Story | Natural Herbal Care",
   description: "High-quality, natural herbal personal care.",
 };
 
@@ -13,31 +19,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        {/* The announcement bar and navbar can go here so they appear on EVERY page later */}
-        <div className="announcement-bar">
-          Free Shipping on all orders above ₹499
-        </div>
-
-        <nav className="navbar">
-          <div className="nav-links">
-            <a href="#">Shop</a>
-            <a href="#">Ingredients</a>
-            <a href="#">Our Story</a>
-          </div>
-          <div className="logo">
-            <h1>The Green Story.</h1>
-          </div>
-          <div className="nav-icons">
-            <button>Search</button>
-            <button>Account</button>
-            <button>Cart</button>
-          </div>
-        </nav>
-
-        {/* This "children" variable loads your page.tsx content */}
-        {children}
+    <html lang="en" className={`${inter.variable}`}>
+      <body className="flex flex-col min-h-screen">
+        <CartProvider>
+          <Header />
+          <CartDrawer />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );
