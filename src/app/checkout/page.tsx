@@ -12,22 +12,18 @@ export default function CheckoutPage() {
                     {/* Main Checkout Form */}
                     <div className="lg:col-span-2 space-y-8">
 
-                        {/* Contact Information */}
-                        <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                                <span className="bg-green-100 text-green-800 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
-                                Contact Information
-                            </h2>
-                            <div className="space-y-4">
-                                <div>
-                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
-                                    <input type="email" id="email" className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" placeholder="you@example.com" />
-                                </div>
-                                <div className="flex items-center">
-                                    <input type="checkbox" id="newsletter" className="w-4 h-4 text-green-600 rounded focus:ring-green-500 accent-green-600" />
-                                    <label htmlFor="newsletter" className="ml-2 text-sm text-gray-600">Email me with news and offers</label>
-                                </div>
+                        {/* Account Information */}
+                        <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-800 mb-2 flex items-center">
+                                    <span className="bg-green-100 text-green-800 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                                    Account
+                                </h2>
+                                <p className="text-sm text-gray-600 ml-11">Log in or sign up to complete your purchase</p>
                             </div>
+                            <Link href="/login" className="bg-green-700 text-white font-bold py-2.5 px-6 rounded-xl hover:bg-green-800 transition text-sm">
+                                Log in / Sign up
+                            </Link>
                         </section>
 
                         {/* Shipping Address */}

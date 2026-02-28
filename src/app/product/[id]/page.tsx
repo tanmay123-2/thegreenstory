@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Beaker, Info, Droplets } from 'lucide-react';
 import ProductActions from '@/components/ProductActions';
+import ProductReviews from '@/components/ProductReviews';
 
 export async function generateStaticParams() {
     return products.map((product) => ({
@@ -113,6 +114,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                         </div>
                     </div>
                 </div>
+
+                {/* Product Reviews Section */}
+                <ProductReviews productId={product.id} />
+
             </div>
         </div>
     );

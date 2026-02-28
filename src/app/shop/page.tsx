@@ -1,10 +1,14 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { products } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
+import { useSearchParams } from 'next/navigation';
 
-export default function Shop() {
+function ShopContent() {
+    const searchParams = useSearchParams();
+    const searchQuery = searchParams.get('q')?.toLowerCase() || '';
+
     const [selectedConcerns, setSelectedConcerns] = useState<string[]>([]);
     const [sortOption, setSortOption] = useState<string>('Featured');
 
@@ -29,7 +33,17 @@ export default function Shop() {
     const filteredAndSortedProducts = useMemo(() => {
         let result = products;
 
-        // Filter
+        // Search Query Filter
+        if (searchQuery) {
+            result = result.filter(product =>
+                product.name.toLowerCase().includes(searchQuery) ||
+                product.description.toLowerCase().includes(searchQuery) ||
+                product.ingredients.some(i => i.toLowerCase().includes(searchQuery)) ||
+                product.concerns.some(c => c.toLowerCase().includes(searchQuery))
+            );
+        }
+
+        // Filter by Concern
         if (selectedConcerns.length > 0) {
             result = result.filter(product =>
                 product.concerns.some(c => selectedConcerns.includes(c))
@@ -51,16 +65,20 @@ export default function Shop() {
         }
 
         return result;
-    }, [selectedConcerns, sortOption]);
+    }, [selectedConcerns, sortOption, searchQuery]);
 
     return (
         <div className="bg-brand-gray min-h-screen">
             {/* Header Banner */}
             <header className="bg-brand-white py-16 px-6 border-b border-brand-gray-dark/10">
                 <div className="max-w-7xl mx-auto">
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mb-4">All Formulations</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mb-4">
+                        {searchQuery ? `Search Results for "${searchQuery}"` : 'All Formulations'}
+                    </h1>
                     <p className="text-[13px] text-brand-gray-dark font-medium max-w-2xl leading-relaxed">
-                        Browse our complete range of science-backed skincare. Filter by your specific concerns or search for targeted active ingredients.
+                        {searchQuery
+                            ? `Showing results matching your search terms.`
+                            : `Browse our complete range of science-backed skincare. Filter by your specific concerns or search for targeted active ingredients.`}
                     </p>
                 </div>
             </header>
@@ -115,15 +133,30 @@ export default function Shop() {
                         <div className="py-24 text-center border border-brand-gray-dark/10 bg-brand-white">
                             <p className="text-[13px] font-bold uppercase tracking-widest text-brand-black mb-4">No formulations found.</p>
                             <button
-                                onClick={() => setSelectedConcerns([])}
+                                onClick={() => {
+                                    setSelectedConcerns([]);
+                                    if (searchQuery) window.location.href = '/shop';
+                                }}
                                 className="text-[11px] font-bold uppercase tracking-widest border-b border-brand-black pb-0.5 hover:opacity-70 transition-opacity"
                             >
-                                Clear all filters
+                                Clear all filters & search
                             </button>
                         </div>
                     )}
                 </main>
             </div>
         </div>
+    );
+}
+
+export default function Shop() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-brand-gray">
+                <p className="text-[13px] font-bold uppercase tracking-widest text-brand-black">Loading Formulations...</p>
+            </div>
+        }>
+            <ShopContent />
+        </Suspense>
     );
 }
