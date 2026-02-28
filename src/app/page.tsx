@@ -13,10 +13,10 @@ export default function Home() {
       <section className="flex flex-col md:flex-row h-auto min-h-[80vh] w-full border-b border-brand-gray-dark/10 bg-brand-white">
         <div className="w-full md:w-1/2 flex flex-col justify-center p-8 md:p-16 lg:p-24">
           <span className="inline-block px-3 py-1 bg-brand-gray text-brand-black text-[10px] uppercase font-bold tracking-widest w-fit mb-8 border border-brand-gray-dark/10">
-            Science Backed
+            Ayurvedic
           </span>
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-brand-black mb-6 leading-[0.9]">
-            Efficacy <br />over <br />everything.
+            Naturality <br />over <br />everything.
           </h1>
           <p className="text-base md:text-lg text-brand-gray-dark mb-10 max-w-md font-medium leading-relaxed">
             No fluff, no false promises. Formulated with proven active ingredients at optimal concentrations for visible results.
@@ -52,18 +52,18 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8 divide-y md:divide-y-0 md:divide-x divide-brand-gray-dark/10">
           <div className="flex flex-col items-center text-center px-4 pt-4 md:pt-0">
             <Beaker size={24} className="mb-4 text-brand-black" strokeWidth={1.5} />
-            <h3 className="text-[13px] font-bold uppercase tracking-widest mb-2">High Concentrations</h3>
-            <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed">Active ingredients formulated at clinically proven levels.</p>
+            <h3 className="text-[13px] font-bold uppercase tracking-widest mb-2">Gentle Yet Effective</h3>
+            <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed">Formulated to be kind to sensitive skin and scalp while delivering visible results.</p>
           </div>
           <div className="flex flex-col items-center text-center px-4 pt-8 md:pt-0">
             <Search size={24} className="mb-4 text-brand-black" strokeWidth={1.5} />
-            <h3 className="text-[13px] font-bold uppercase tracking-widest mb-2">Total Transparency</h3>
-            <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed">We disclose exact ingredient percentages and pH levels.</p>
+            <h3 className="text-[13px] font-bold uppercase tracking-widest mb-2">Purely Herbal</h3>
+            <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed">Inspired by traditional Indian herbal remedies.</p>
           </div>
           <div className="flex flex-col items-center text-center px-4 pt-8 md:pt-0">
             <CheckCircle size={24} className="mb-4 text-brand-black" strokeWidth={1.5} />
-            <h3 className="text-[13px] font-bold uppercase tracking-widest mb-2">Dermatologist Tested</h3>
-            <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed">Rigorously tested for safety and efficacy on all skin types.</p>
+            <h3 className="text-[13px] font-bold uppercase tracking-widest mb-2">Handcrafted</h3>
+            <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed">Crafted with care, not mass-produced in factories.</p>
           </div>
         </div>
       </section>
