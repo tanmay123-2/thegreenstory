@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo, Suspense } from 'react';
-import { products } from '@/lib/data';
+import { useState, useMemo, Suspense, useEffect } from 'react';
+import { getProducts, Product } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
 import SkeletonProductCard from '@/components/SkeletonProductCard';
 import { useSearchParams } from 'next/navigation';
@@ -12,31 +12,29 @@ function ShopContent() {
 
     // Read initial filters from URL if present
     const urlCategory = searchParams.get('category');
-    const urlConcern = searchParams.get('concern');
 
-    const [selectedConcerns, setSelectedConcerns] = useState<string[]>(urlConcern ? [urlConcern.toLowerCase()] : []);
+    const [allProducts, setAllProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+
     const [selectedCategories, setSelectedCategories] = useState<string[]>(urlCategory ? [urlCategory.toLowerCase()] : []);
     const [sortOption, setSortOption] = useState<string>('Featured');
 
-    const availableConcerns = [
-        'Acne Control',
-        'Uneven Tone',
-        'Dryness',
-        'Anti-aging',
-        'Oiliness',
-        'Barrier Repair',
-        'Redness'
-    ];
+    useEffect(() => {
+        if (urlCategory) {
+            setSelectedCategories([urlCategory.toLowerCase()]);
+        }
+    }, [urlCategory]);
 
-    const availableCategories = ['Face Serum', 'Moisturizer', 'Cleanser', 'Toner'];
+    useEffect(() => {
+        const fetchRemoteProducts = async () => {
+            const data = await getProducts();
+            setAllProducts(data);
+            setLoading(false);
+        };
+        fetchRemoteProducts();
+    }, []);
 
-    const handleConcernToggle = (concern: string) => {
-        setSelectedConcerns(prev =>
-            prev.includes(concern.toLowerCase())
-                ? prev.filter(c => c !== concern.toLowerCase())
-                : [...prev, concern.toLowerCase()]
-        );
-    };
+    const availableCategories = ['Shampoos', 'Oils', 'Conditioners', 'Toners'];
 
     const handleCategoryToggle = (category: string) => {
         setSelectedCategories(prev =>
@@ -47,29 +45,25 @@ function ShopContent() {
     };
 
     const filteredAndSortedProducts = useMemo(() => {
-        let result = products;
+        let result = allProducts;
 
         // Search Query Filter
         if (searchQuery) {
             result = result.filter(product =>
                 product.name.toLowerCase().includes(searchQuery) ||
-                product.description.toLowerCase().includes(searchQuery) ||
-                product.ingredients.some(i => i.toLowerCase().includes(searchQuery)) ||
-                product.concerns.some(c => c.toLowerCase().includes(searchQuery))
+                (product.description && product.description.toLowerCase().includes(searchQuery)) ||
+                (product.ingredients && product.ingredients.some(i => i.toLowerCase().includes(searchQuery)))
             );
         }
 
-        // Filter by Concern
-        if (selectedConcerns.length > 0) {
-            result = result.filter(product =>
-                product.concerns.some(c => selectedConcerns.includes(c.toLowerCase()))
-            );
-        }
-
-        // Filter by Category
+        // Filter by Category (Matching against product name since DB category is generic 'Hair Care')
+        // Strip the trailing 's' to match the plural filter (e.g. 'shampoos') to singular product names ('shampoo')
         if (selectedCategories.length > 0) {
             result = result.filter(product =>
-                selectedCategories.includes(product.category.toLowerCase())
+                selectedCategories.some(cat => {
+                    const singularCat = cat.endsWith('s') ? cat.slice(0, -1) : cat;
+                    return product.name.toLowerCase().includes(singularCat);
+                })
             );
         }
 
@@ -88,7 +82,7 @@ function ShopContent() {
         }
 
         return result;
-    }, [selectedConcerns, sortOption, searchQuery]);
+    }, [allProducts, selectedCategories, sortOption, searchQuery]);
 
     return (
         <div className="bg-brand-gray min-h-screen">
@@ -112,24 +106,6 @@ function ShopContent() {
                 <aside className="w-full md:w-64 flex-shrink-0">
                     <div className="sticky top-24 space-y-8">
                         <div>
-                            <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4 border-b border-brand-gray-dark/10 pb-2">Filter By Concern</h3>
-                            <ul className="space-y-3 text-[13px] font-medium text-brand-gray-dark">
-                                {availableConcerns.map(concern => (
-                                    <li key={concern} className="flex items-center gap-3">
-                                        <input
-                                            type="checkbox"
-                                            id={`concern-${concern}`}
-                                            checked={selectedConcerns.includes(concern.toLowerCase())}
-                                            onChange={() => handleConcernToggle(concern)}
-                                            className="accent-brand-black w-4 h-4 cursor-pointer"
-                                        />
-                                        <label htmlFor={`concern-${concern}`} className="cursor-pointer hover:text-brand-black transition-colors">{concern}</label>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div>
                             <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4 border-b border-brand-gray-dark/10 pb-2">Filter By Category</h3>
                             <ul className="space-y-3 text-[13px] font-medium text-brand-gray-dark">
                                 {availableCategories.map(category => (
@@ -151,39 +127,48 @@ function ShopContent() {
 
                 {/* Product Grid */}
                 <main className="flex-1">
-                    {/* Utility Bar */}
-                    <div className="flex justify-between items-center mb-8 bg-brand-white p-4 border border-brand-gray-dark/10">
-                        <p className="text-[11px] font-bold text-brand-gray-dark uppercase tracking-widest">Showing {filteredAndSortedProducts.length} Products</p>
-                        <select
-                            value={sortOption}
-                            onChange={(e) => setSortOption(e.target.value)}
-                            className="bg-transparent text-[11px] font-bold uppercase tracking-widest border-none cursor-pointer focus:outline-none"
-                        >
-                            <option value="Featured">Sort By: Featured</option>
-                            <option value="Price: Low to High">Price: Low to High</option>
-                            <option value="Price: High to Low">Price: High to Low</option>
-                        </select>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredAndSortedProducts.map((product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
-                    </div>
-                    {filteredAndSortedProducts.length === 0 && (
-                        <div className="py-24 text-center border border-brand-gray-dark/10 bg-brand-white">
-                            <p className="text-[13px] font-bold uppercase tracking-widest text-brand-black mb-4">No formulations found.</p>
-                            <button
-                                onClick={() => {
-                                    setSelectedConcerns([]);
-                                    setSelectedCategories([]);
-                                    if (searchQuery) window.location.href = '/shop';
-                                }}
-                                className="text-[11px] font-bold uppercase tracking-widest border-b border-brand-black pb-0.5 hover:opacity-70 transition-opacity"
-                            >
-                                Clear all filters & search
-                            </button>
+                    {loading ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {[...Array(6)].map((_, i) => (
+                                <SkeletonProductCard key={i} />
+                            ))}
                         </div>
+                    ) : (
+                        <>
+                            {/* Utility Bar */}
+                            <div className="flex justify-between items-center mb-8 bg-brand-white p-4 border border-brand-gray-dark/10">
+                                <p className="text-[11px] font-bold text-brand-gray-dark uppercase tracking-widest">Showing {filteredAndSortedProducts.length} Products</p>
+                                <select
+                                    value={sortOption}
+                                    onChange={(e) => setSortOption(e.target.value)}
+                                    className="bg-transparent text-[11px] font-bold uppercase tracking-widest border-none cursor-pointer focus:outline-none"
+                                >
+                                    <option value="Featured">Sort By: Featured</option>
+                                    <option value="Price: Low to High">Price: Low to High</option>
+                                    <option value="Price: High to Low">Price: High to Low</option>
+                                </select>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {filteredAndSortedProducts.map((product) => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
+                            {filteredAndSortedProducts.length === 0 && (
+                                <div className="py-24 text-center border border-brand-gray-dark/10 bg-brand-white">
+                                    <p className="text-[13px] font-bold uppercase tracking-widest text-brand-black mb-4">No formulations found.</p>
+                                    <button
+                                        onClick={() => {
+                                            setSelectedCategories([]);
+                                            if (searchQuery) window.location.href = '/shop';
+                                        }}
+                                        className="text-[11px] font-bold uppercase tracking-widest border-b border-brand-black pb-0.5 hover:opacity-70 transition-opacity"
+                                    >
+                                        Clear all filters & search
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </main>
             </div>

@@ -31,6 +31,18 @@ export default function Register() {
         setLoading(false);
     };
 
+    const handleGoogleLogin = async () => {
+        setLoading(true);
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/`,
+            }
+        });
+        setLoading(false);
+        if (error) alert("Error: " + error.message);
+    };
+
     return (
         <div className="bg-brand-gray min-h-[80vh] flex flex-col justify-center items-center py-24 px-6">
             <div className="bg-brand-white p-8 md:p-12 border border-brand-gray-dark/10 w-full max-w-md shadow-sm">
@@ -86,6 +98,21 @@ export default function Register() {
                         {loading ? "Creating Account..." : "Create My Account"}
                     </button>
                 </form>
+
+                <div className="flex items-center my-6">
+                    <div className="flex-1 border-t border-brand-gray-dark/20"></div>
+                    <span className="px-4 text-brand-gray-dark text-[10px] uppercase font-bold tracking-widest">or</span>
+                    <div className="flex-1 border-t border-brand-gray-dark/20"></div>
+                </div>
+
+                <button
+                    onClick={handleGoogleLogin}
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-3 bg-brand-white text-brand-black font-bold py-4 text-[13px] uppercase tracking-widest rounded-none border border-brand-gray-dark/20 hover:bg-brand-gray transition-colors"
+                >
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
+                    Continue with Google
+                </button>
 
                 <p className="mt-8 text-center text-[13px] font-medium text-brand-gray-dark">
                     Already have an account?{' '}

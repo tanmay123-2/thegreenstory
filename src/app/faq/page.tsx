@@ -8,12 +8,8 @@ export const metadata: Metadata = {
 export default function FAQ() {
     const faqs = [
         {
-            question: "Are your products cruelty-free and vegan?",
-            answer: "Yes, 100%. We never test on animals at any stage of product development, and we do not use any animal-derived ingredients."
-        },
-        {
             question: "What is your return policy?",
-            answer: "We offer a 30-day money-back guarantee. If a formulation doesn't work for your skin, simply return the unused portion for a full refund."
+            answer: "We offer a 7-day money-back guarantee. If a formulation doesn't work for your skin, simply return the unused portion for a full refund."
         },
         {
             question: "Why don't your products have fragrances?",
@@ -22,10 +18,6 @@ export default function FAQ() {
         {
             question: "How do I know the exact concentration of an active?",
             answer: "We practice total transparency. The exact concentration of every core active ingredient is printed directly on the front label."
-        },
-        {
-            question: "Do you ship internationally?",
-            answer: "Currently, we ship within the US and Canada. We are working on expanding our distribution network globally."
         }
     ];
 

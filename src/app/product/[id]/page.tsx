@@ -1,4 +1,4 @@
-import { products } from '@/lib/data';
+import { getProductById, getProducts } from '@/lib/data';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Beaker, Info, Droplets } from 'lucide-react';
@@ -9,14 +9,15 @@ import WishlistButton from '@/components/WishlistButton';
 import IngredientGlossary from '@/components/IngredientGlossary';
 import BeforeAfterSlider from '@/components/BeforeAfterSlider';
 
-export async function generateStaticParams() {
-    return products.map((product) => ({
-        id: product.id,
-    }));
-}
+// Force dynamic rendering to prevent Next.js from caching a "Product not found" state
+export const dynamic = 'force-dynamic';
 
-export default function ProductPage({ params }: { params: { id: string } }) {
-    const product = products.find((p) => p.id === params.id);
+
+export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+    // Await params for Next.js 15+ support
+    const resolvedParams = await params;
+    // Fetch product from Supabase directly
+    const product = await getProductById(resolvedParams.id);
 
     if (!product) {
         return (

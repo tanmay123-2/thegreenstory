@@ -3,18 +3,18 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function UnifiedLogin() {
-    const [method, setMethod] = useState<'email' | 'whatsapp'>('email');
-    const [contact, setContact] = useState(''); // Stores either email or phone
+    const [contact, setContact] = useState(''); // Stores email
     const [otp, setOtp] = useState('');
     const [isSent, setIsSent] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showEmailInput, setShowEmailInput] = useState(false);
 
     // 1. Send the Code
     const handleSendOTP = async () => {
         setLoading(true);
         const { error } = await supabase.auth.signInWithOtp({
-            [method === 'email' ? 'email' : 'phone']: contact,
-            options: { channel: method === 'email' ? 'email' : 'whatsapp' }
+            email: contact,
+            options: { channel: 'email' }
         } as any);
 
         setLoading(false);
@@ -25,9 +25,9 @@ export default function UnifiedLogin() {
     // 2. Verify the Code
     const handleVerify = async () => {
         const { error } = await supabase.auth.verifyOtp({
-            [method === 'email' ? 'email' : 'phone']: contact,
+            email: contact,
             token: otp,
-            type: method === 'email' ? 'email' : 'whatsapp'
+            type: 'email'
         } as any);
 
         if (error) alert(error.message);
@@ -52,10 +52,10 @@ export default function UnifiedLogin() {
 
     return (
         <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded-3xl shadow-2xl border border-green-100">
-            <h2 className="text-3xl font-bold text-green-800 mb-6 text-center">Sign In</h2>
+            <h2 className="text-3xl font-bold text-green-800 mb-6 text-center">Login or Sign Up</h2>
 
             {!isSent ? (
-                <div className="space-y-6">
+                <div className="space-y-4">
                     {/* Google Login Button */}
                     <button
                         onClick={handleGoogleLogin}
@@ -66,38 +66,37 @@ export default function UnifiedLogin() {
                         Continue with Google
                     </button>
 
-                    <div className="flex items-center my-4">
-                        <div className="flex-1 border-t border-gray-200"></div>
-                        <span className="px-4 text-gray-500 text-sm font-medium">or continue with</span>
-                        <div className="flex-1 border-t border-gray-200"></div>
-                    </div>
-
-                    {/* Method Switcher */}
-                    <div className="flex bg-gray-100 p-1 rounded-xl">
+                    {!showEmailInput ? (
                         <button
-                            onClick={() => setMethod('email')}
-                            className={`flex-1 py-2 rounded-lg text-sm font-bold ${method === 'email' ? 'bg-white shadow' : ''}`}
-                        >Email</button>
-                        <button
-                            onClick={() => setMethod('whatsapp')}
-                            className={`flex-1 py-2 rounded-lg text-sm font-bold ${method === 'whatsapp' ? 'bg-white shadow text-green-600' : ''}`}
-                        >WhatsApp</button>
-                    </div>
+                            onClick={() => setShowEmailInput(true)}
+                            className="w-full flex items-center justify-center gap-3 bg-white text-gray-700 font-bold py-3 rounded-xl border border-gray-300 hover:bg-gray-50 transition shadow-sm"
+                        >
+                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            Continue with Email
+                        </button>
+                    ) : (
+                        <div className="space-y-4 mt-6">
+                            <div className="flex items-center my-4">
+                                <div className="flex-1 border-t border-gray-200"></div>
+                                <span className="px-4 text-gray-500 text-sm font-medium">Enter your email</span>
+                                <div className="flex-1 border-t border-gray-200"></div>
+                            </div>
+                            <input
+                                type="email"
+                                placeholder="nature@greenstory.com"
+                                className="w-full p-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                                onChange={(e) => setContact(e.target.value)}
+                            />
 
-                    <input
-                        type={method === 'email' ? 'email' : 'tel'}
-                        placeholder={method === 'email' ? "nature@greenstory.com" : "+91 00000 00000"}
-                        className="w-full p-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
-                        onChange={(e) => setContact(e.target.value)}
-                    />
-
-                    <button
-                        disabled={loading}
-                        onClick={handleSendOTP}
-                        className="w-full bg-green-700 text-white font-bold py-4 rounded-xl hover:bg-green-800 transition"
-                    >
-                        {loading ? "Sending..." : `Send ${method === 'email' ? 'Link' : 'WhatsApp Code'}`}
-                    </button>
+                            <button
+                                disabled={loading}
+                                onClick={handleSendOTP}
+                                className="w-full bg-green-700 text-white font-bold py-4 rounded-xl hover:bg-green-800 transition"
+                            >
+                                {loading ? "Sending..." : "Send Link"}
+                            </button>
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="space-y-6">
@@ -114,7 +113,7 @@ export default function UnifiedLogin() {
                         Verify & Enter
                     </button>
                     <button onClick={() => setIsSent(false)} className="w-full text-sm text-gray-500 underline">
-                        Change {method}
+                        Change Email
                     </button>
                 </div>
             )}

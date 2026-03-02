@@ -1,9 +1,10 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { products } from '../lib/data';
-import ProductCard from '../components/ProductCard';
+import { getProducts, Product } from '@/lib/data';
+import ProductCard from '@/components/ProductCard';
 import { ArrowRight, Beaker, CheckCircle, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -18,7 +19,21 @@ const staggerContainer = {
 };
 
 export default function Home() {
-  const featuredProducts = products.slice(0, 4);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      const allProducts = await getProducts();
+
+      const targetProducts = ['Shampoo (200ml)', 'Onion Hair Oil (200ml)'];
+      const bestSellers = allProducts.filter(p => targetProducts.includes(p.name));
+
+      setFeaturedProducts(bestSellers);
+      setLoading(false);
+    };
+    fetchFeatured();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-brand-gray">
@@ -57,8 +72,8 @@ export default function Home() {
         </motion.div>
         <motion.div variants={fadeInUp} className="w-full md:w-1/2 relative min-h-[50vh] bg-brand-gray">
           <Image
-            src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=1200"
-            alt="Clinical skincare bottles"
+            src="/shampoo.png"
+            alt="Handcrafted Herbal Shampoo"
             fill
             priority
             className="object-cover object-center"
@@ -93,7 +108,7 @@ export default function Home() {
         </div>
       </motion.section>
 
-      {/* Shop by Concern */}
+      {/* Shop by Category */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -102,12 +117,12 @@ export default function Home() {
         className="py-24 px-6 bg-brand-white max-w-7xl mx-auto w-full"
       >
         <header className="flex justify-between items-end mb-12">
-          <h2 className="text-3xl font-bold tracking-tighter uppercase">Shop By Concern</h2>
+          <h2 className="text-3xl font-bold tracking-tighter uppercase">Shop By Category</h2>
         </header>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {['Acne', 'Pigmentation', 'Aging', 'Dryness'].map((concern) => (
-            <Link key={concern} href={`/shop?concern=${concern.toLowerCase()}`} className="group relative aspect-[3/4] bg-brand-gray overflow-hidden flex items-end p-6 border border-transparent hover:border-brand-black transition-colors">
-              <span className="relative z-10 text-[13px] font-bold uppercase tracking-widest bg-brand-white px-4 py-2 group-hover:bg-brand-black group-hover:text-brand-white transition-colors">{concern}</span>
+          {['Shampoos', 'Oils', 'Conditioners', 'Toners'].map((category) => (
+            <Link key={category} href={`/shop?category=${category.toLowerCase()}`} className="group relative h-32 bg-brand-gray flex items-center justify-center border border-transparent hover:border-brand-black transition-colors">
+              <span className="text-[13px] font-bold uppercase tracking-widest text-brand-black transition-colors">{category}</span>
             </Link>
           ))}
         </div>
@@ -130,11 +145,15 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {featuredProducts.map((product: any) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-10 opacity-50 text-sm font-bold uppercase tracking-widest">Loading Best Sellers...</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {featuredProducts.map((product: Product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </div>
       </motion.section>
     </div>
