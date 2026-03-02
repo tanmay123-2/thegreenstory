@@ -11,11 +11,12 @@ export default function ProductReviews({ productId }: { productId: string }) {
             rating: 5,
             title: "Excellent formulation",
             content: "I have been using this for a few weeks and the results are amazing. Highly recommended for anyone looking for effective skincare.",
-            date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+            date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+            photos: [] as string[]
         }
     ]);
 
-    const [newReview, setNewReview] = useState({ name: '', title: '', content: '', rating: 5 });
+    const [newReview, setNewReview] = useState({ name: '', title: '', content: '', rating: 5, photos: [] as string[] });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showForm, setShowForm] = useState(false);
 
@@ -31,7 +32,7 @@ export default function ProductReviews({ productId }: { productId: string }) {
                 ...newReview,
                 date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
             }, ...reviews]);
-            setNewReview({ name: '', title: '', content: '', rating: 5 });
+            setNewReview({ name: '', title: '', content: '', rating: 5, photos: [] });
             setIsSubmitting(false);
             setShowForm(false);
             alert("Thank you for your review!");
@@ -124,6 +125,32 @@ export default function ProductReviews({ productId }: { productId: string }) {
                             ></textarea>
                         </div>
 
+                        <div>
+                            <label className="block text-[11px] font-bold text-brand-gray-dark uppercase tracking-widest mb-2">Upload Photos</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={(e) => {
+                                    if (e.target.files) {
+                                        const urls = Array.from(e.target.files).map(file => URL.createObjectURL(file));
+                                        setNewReview({ ...newReview, photos: [...newReview.photos, ...urls] });
+                                    }
+                                }}
+                                className="w-full border border-brand-gray-dark/20 p-4 text-[13px] focus:outline-none focus:border-brand-black bg-brand-white file:mr-4 file:py-2 file:px-4 file:border-0 file:text-[11px] file:font-bold file:uppercase file:tracking-widest file:bg-brand-black file:text-brand-white hover:file:border-brand-gray-dark"
+                            />
+                            {newReview.photos.length > 0 && (
+                                <div className="flex gap-2 mt-4 flex-wrap">
+                                    {newReview.photos.map((photo, idx) => (
+                                        <div key={idx} className="relative w-20 h-20 bg-brand-gray border border-brand-gray-dark/10">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={photo} alt={`Upload ${idx}`} className="w-full h-full object-cover" />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         <button
                             type="submit"
                             disabled={isSubmitting}
@@ -146,6 +173,17 @@ export default function ProductReviews({ productId }: { productId: string }) {
                         </div>
                         <h4 className="text-[14px] font-bold text-brand-black mb-2 leading-tight">"{review.title}"</h4>
                         <p className="text-[13px] text-brand-gray-dark leading-relaxed font-medium mb-4 max-w-4xl">{review.content}</p>
+
+                        {review.photos && review.photos.length > 0 && (
+                            <div className="flex gap-2 mb-4 flex-wrap">
+                                {review.photos.map((photo, idx) => (
+                                    <div key={idx} className="relative w-24 h-24 bg-brand-gray border border-brand-gray-dark/10 cursor-pointer hover:opacity-80 transition-opacity">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={photo} alt={`Review photo ${idx}`} className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
                         <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest">
                             <span className="font-bold text-brand-black">{review.name}</span>
