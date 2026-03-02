@@ -4,6 +4,10 @@ import Link from 'next/link';
 import { ArrowLeft, Beaker, Info, Droplets } from 'lucide-react';
 import ProductActions from '@/components/ProductActions';
 import ProductReviews from '@/components/ProductReviews';
+import FrequentlyBoughtTogether from '@/components/FrequentlyBoughtTogether';
+import WishlistButton from '@/components/WishlistButton';
+import IngredientGlossary from '@/components/IngredientGlossary';
+import BeforeAfterSlider from '@/components/BeforeAfterSlider';
 
 export async function generateStaticParams() {
     return products.map((product) => ({
@@ -57,9 +61,12 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                                 <p className="text-2xl font-bold">₹{product.price}</p>
                             </div>
 
-                            <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter text-brand-black mb-6 leading-[0.9]">
-                                {product.name}
-                            </h1>
+                            <div className="flex justify-between items-start mb-6">
+                                <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter text-brand-black leading-[0.9]">
+                                    {product.name}
+                                </h1>
+                                <WishlistButton productId={product.id} />
+                            </div>
 
                             <p className="text-[14px] text-brand-gray-dark leading-relaxed font-medium">
                                 {product.description}
@@ -89,16 +96,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                                 </ul>
                             </div>
 
-                            {/* Ingredients */}
-                            <div className="border border-brand-gray-dark/10 p-5 bg-brand-gray/50 text-brand-black flex flex-col gap-3">
-                                <div className="flex items-center gap-2 font-bold text-[11px] uppercase tracking-widest text-brand-gray-dark border-b border-brand-gray-dark/10 pb-3">
-                                    <Beaker size={16} strokeWidth={2} />
-                                    <span>Full Ingredient Profile</span>
-                                </div>
-                                <p className="text-[13px] text-brand-black font-medium leading-relaxed font-mono mt-2">
-                                    {product.ingredients.join(', ')}
-                                </p>
-                            </div>
+                            {/* Ingredients Glossary */}
+                            <IngredientGlossary ingredients={product.ingredients} />
 
                             {/* How to use */}
                             <div className="border border-brand-gray-dark/10 p-5 bg-brand-gray/50 text-brand-black flex flex-col gap-3">
@@ -112,11 +111,29 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                             </div>
 
                         </div>
+
+                        {/* Clinical Results Section */}
+                        <div className="mt-8 border border-brand-gray-dark/10 p-5 bg-brand-white text-brand-black flex flex-col gap-4">
+                            <div className="flex justify-between items-center mb-2">
+                                <h3 className="font-bold text-[13px] uppercase tracking-widest text-brand-black">Clinical Results</h3>
+                            </div>
+                            <BeforeAfterSlider
+                                beforeImage="https://images.unsplash.com/photo-1512496015851-a1dcdb3ccfa1?auto=format&fit=crop&q=80&w=800"
+                                afterImage="https://images.unsplash.com/photo-1615397323286-63eef1284eb4?auto=format&fit=crop&q=80&w=800"
+                            />
+                            <p className="text-[11px] text-brand-gray-dark font-medium uppercase tracking-widest mt-2 text-center">
+                                *Results from an independent consumer study of 30 women over 4 weeks.
+                            </p>
+                        </div>
+
                     </div>
                 </div>
 
                 {/* Product Reviews Section */}
                 <ProductReviews productId={product.id} />
+
+                {/* Frequently Bought Together */}
+                <FrequentlyBoughtTogether currentProductId={product.id} />
 
             </div>
         </div>

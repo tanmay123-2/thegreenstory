@@ -37,12 +37,41 @@ export default function UnifiedLogin() {
         }
     };
 
+    // 3. Google Login
+    const handleGoogleLogin = async () => {
+        setLoading(true);
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/`,
+            }
+        });
+        setLoading(false);
+        if (error) alert(error.message);
+    };
+
     return (
         <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded-3xl shadow-2xl border border-green-100">
             <h2 className="text-3xl font-bold text-green-800 mb-6 text-center">Sign In</h2>
 
             {!isSent ? (
                 <div className="space-y-6">
+                    {/* Google Login Button */}
+                    <button
+                        onClick={handleGoogleLogin}
+                        disabled={loading}
+                        className="w-full flex items-center justify-center gap-3 bg-white text-gray-700 font-bold py-3 rounded-xl border border-gray-300 hover:bg-gray-50 transition shadow-sm"
+                    >
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
+                        Continue with Google
+                    </button>
+
+                    <div className="flex items-center my-4">
+                        <div className="flex-1 border-t border-gray-200"></div>
+                        <span className="px-4 text-gray-500 text-sm font-medium">or continue with</span>
+                        <div className="flex-1 border-t border-gray-200"></div>
+                    </div>
+
                     {/* Method Switcher */}
                     <div className="flex bg-gray-100 p-1 rounded-xl">
                         <button
