@@ -137,7 +137,10 @@ export default function Header() {
                   Orders
                 </Link>
                 <button
-                  onClick={() => supabase.auth.signOut()}
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    window.location.href = '/';
+                  }}
                   className="text-[10px] font-bold uppercase tracking-widest text-brand-gray-dark hover:text-brand-black transition-colors"
                 >
                   Logout

@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 interface MobileMenuProps {
     isOpen: boolean;
@@ -13,6 +15,28 @@ interface MobileMenuProps {
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     const [activeSubMenu, setActiveSubMenu] = useState<'main' | 'shop'>('main');
+    const [user, setUser] = useState<any>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            setUser(session?.user ?? null);
+        };
+        fetchUser();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        onClose();
+        window.location.href = '/';
+    };
 
     const menuVariants = {
         closed: {
@@ -85,9 +109,23 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                                 Contact Us
                                             </Link>
                                             <div className="h-px bg-brand-gray-dark/10 my-4" />
-                                            <Link href="/register" onClick={onClose} className="py-2 hover:opacity-70 transition-opacity text-[13px] text-brand-gray-dark">
-                                                My Account
+                                            <Link href="/wishlist" onClick={onClose} className="py-2 hover:opacity-70 transition-opacity text-[13px] text-brand-gray-dark">
+                                                Wishlist
                                             </Link>
+                                            {user ? (
+                                                <>
+                                                    <Link href="/orders" onClick={onClose} className="py-2 hover:opacity-70 transition-opacity text-[13px] text-brand-gray-dark">
+                                                        Orders
+                                                    </Link>
+                                                    <button onClick={handleLogout} className="text-left py-2 hover:opacity-70 transition-opacity text-[13px] text-brand-gray-dark uppercase font-bold tracking-widest">
+                                                        Logout
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <Link href="/register" onClick={onClose} className="py-2 hover:opacity-70 transition-opacity text-[13px] text-brand-gray-dark">
+                                                    My Account
+                                                </Link>
+                                            )}
                                         </nav>
                                     </motion.div>
                                 )}
@@ -111,22 +149,9 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                         <div className="mb-8">
                                             <h4 className="font-bold text-[11px] uppercase tracking-widest text-brand-gray-dark mb-4 border-b border-brand-gray-dark/10 pb-2">By Category</h4>
                                             <ul className="flex flex-col gap-4 text-[14px] font-bold uppercase tracking-widest">
-                                                {['Cleansers', 'Toners', 'Serums', 'Moisturizers'].map(item => (
+                                                {['Shampoos', 'Oils', 'Conditioners', 'Toners'].map(item => (
                                                     <li key={item}>
-                                                        <Link href={`/shop?category=${item.toLowerCase()}`} onClick={onClose} className="hover:opacity-70 transition-opacity">
-                                                            {item}
-                                                        </Link>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-
-                                        <div>
-                                            <h4 className="font-bold text-[11px] uppercase tracking-widest text-brand-gray-dark mb-4 border-b border-brand-gray-dark/10 pb-2">By Concern</h4>
-                                            <ul className="flex flex-col gap-4 text-[14px] font-bold uppercase tracking-widest">
-                                                {['Acne', 'Pigmentation', 'Aging', 'Dryness'].map(item => (
-                                                    <li key={item}>
-                                                        <Link href={`/shop?concern=${item.toLowerCase()}`} onClick={onClose} className="hover:opacity-70 transition-opacity">
+                                                        <Link href={`/shop?category=${item.toLowerCase()}`} onClick={onClose} className="hover:opacity-70 transition-opacity capitalize">
                                                             {item}
                                                         </Link>
                                                     </li>

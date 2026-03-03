@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
-import { QRCodeSVG } from 'qrcode.react';
+
 
 export default function CheckoutPage() {
     const router = useRouter();
@@ -335,10 +335,12 @@ export default function CheckoutPage() {
                                         <div className="p-4 border-t border-green-200 flex flex-col items-center text-center">
                                             <p className="text-sm font-medium text-gray-800 mb-4">Scan the QR code below using any UPI App to pay securely.</p>
                                             <div className="bg-white p-4 rounded-xl shadow-sm inline-block mb-3">
-                                                <QRCodeSVG
-                                                    value={`upi://pay?pa=reena.goyal@ptaxis&pn=Reena%20Goyal&am=${finalTotal}&cu=INR&tn=${orderRef}`}
-                                                    size={160}
-                                                    includeMargin={false}
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img
+                                                    src={`https://chart.googleapis.com/chart?cht=qr&chs=160x160&chl=${encodeURIComponent(`upi://pay?pa=reena.goyal@ptaxis&pn=Reena%20Goyal&am=${finalTotal}&cu=INR&tn=${orderRef}`)}`}
+                                                    alt="UPI QR Code"
+                                                    width={160}
+                                                    height={160}
                                                 />
                                             </div>
                                             <div className="bg-white border border-gray-200 flex items-center px-4 py-2 rounded-lg mb-1">
