@@ -7,18 +7,18 @@ export const metadata: Metadata = {
 
 export default function Contact() {
     return (
-        <div className="bg-brand-gray min-h-screen pb-24">
+        <div className="bg-brand-gray min-h-screen pb-16 md:pb-24">
             {/* Header */}
-            <header className="bg-brand-white py-24 px-6 border-b border-brand-gray-dark/10">
+            <header className="bg-brand-white py-16 md:py-24 px-6 border-b border-brand-gray-dark/10">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-5xl font-bold tracking-tighter uppercase mb-4">Contact Us.</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mb-4">Contact Us.</h1>
                     <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed max-w-xl mx-auto">
                         Have questions about anything? We are here to assist.
                     </p>
                 </div>
             </header>
 
-            <main className="max-w-3xl mx-auto px-6 mt-24 flex flex-col items-center text-center">
+            <main className="max-w-3xl mx-auto px-6 mt-16 md:mt-24 flex flex-col items-center text-center">
                 {/* Contact Info */}
                 <div className="space-y-16 w-full">
                     <div>

@@ -38,7 +38,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                     Back to Formulations
                 </Link>
 
-                <div className="flex flex-col md:flex-row gap-12 lg:gap-24">
+                <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-24">
                     {/* Image Block */}
                     <div className="w-full md:w-1/2">
                         <div className="relative aspect-square bg-brand-gray w-full border border-brand-gray-dark/10">
@@ -62,8 +62,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                                 <p className="text-2xl font-bold">₹{product.price}</p>
                             </div>
 
-                            <div className="flex justify-between items-start mb-6">
-                                <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter text-brand-black leading-[0.9]">
+                            <div className="flex justify-between items-start mb-6 gap-4">
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter text-brand-black leading-[0.9]">
                                     {product.name}
                                 </h1>
                                 <WishlistButton productId={product.id} />

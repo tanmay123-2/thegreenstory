@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function CheckoutPage() {
     const router = useRouter();
     const { items, cartTotal, clearCart } = useCart();
     const [user, setUser] = useState<any>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoadingAddress, setIsLoadingAddress] = useState(false);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -22,24 +24,82 @@ export default function CheckoutPage() {
         zip: '',
         phone: ''
     });
+
+    // Saved Address State
+    const [savedAddress, setSavedAddress] = useState<any>(null);
+    const [showAddressForm, setShowAddressForm] = useState(true);
+
     const [paymentMethod, setPaymentMethod] = useState('UPI');
+    const [orderRef, setOrderRef] = useState('');
+
+    useEffect(() => {
+        setOrderRef(`ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`);
+    }, []);
 
     const taxes = Math.round(cartTotal * 0.18); // 18% mock tax
     const finalTotal = cartTotal + taxes;
 
     useEffect(() => {
-        const fetchUser = async () => {
+        const fetchUserAndAddress = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-        };
-        fetchUser();
+            const currentUser = session?.user ?? null;
+            setUser(currentUser);
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
+            if (currentUser) {
+                await fetchLatestAddress(currentUser.id);
+            }
+        };
+        fetchUserAndAddress();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+            const currentUser = session?.user ?? null;
+            setUser(currentUser);
+            if (currentUser) {
+                await fetchLatestAddress(currentUser.id);
+            } else {
+                // Clear form if logged out
+                setFormData({
+                    firstName: '', lastName: '', address: '', city: '', state: '', zip: '', phone: ''
+                });
+                setSavedAddress(null);
+                setShowAddressForm(true);
+            }
         });
 
         return () => subscription.unsubscribe();
     }, []);
+
+    const fetchLatestAddress = async (userId: string) => {
+        setIsLoadingAddress(true);
+        try {
+            const { data, error } = await supabase
+                .from('orders')
+                .select('first_name, last_name, address, city, state, zip, phone')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (data && !error) {
+                const addressData = {
+                    firstName: data.first_name || '',
+                    lastName: data.last_name || '',
+                    address: data.address || '',
+                    city: data.city || '',
+                    state: data.state || '',
+                    zip: data.zip || '',
+                    phone: data.phone || ''
+                };
+                setSavedAddress(addressData);
+                setFormData(addressData);
+                setShowAddressForm(false);
+            }
+        } catch (err) {
+            console.error('Error fetching latest address:', err);
+        } finally {
+            setIsLoadingAddress(false);
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -59,7 +119,9 @@ export default function CheckoutPage() {
         }
 
         // Basic validation
-        if (!formData.firstName || !formData.address || !formData.city || !formData.phone) {
+        const targetAddress = (!showAddressForm && savedAddress) ? savedAddress : formData;
+
+        if (!targetAddress.firstName || !targetAddress.address || !targetAddress.city || !targetAddress.phone) {
             alert('Please fill in all required shipping details.');
             return;
         }
@@ -72,14 +134,14 @@ export default function CheckoutPage() {
                 .from('orders')
                 .insert({
                     user_id: user.id,
-                    first_name: formData.firstName,
-                    last_name: formData.lastName,
-                    address: formData.address,
-                    city: formData.city,
-                    state: formData.state,
-                    zip: formData.zip,
-                    phone: formData.phone,
-                    payment_method: paymentMethod,
+                    first_name: targetAddress.firstName,
+                    last_name: targetAddress.lastName,
+                    address: targetAddress.address,
+                    city: targetAddress.city,
+                    state: targetAddress.state,
+                    zip: targetAddress.zip,
+                    phone: targetAddress.phone,
+                    payment_method: paymentMethod, // if UPI, could append orderRef or save to a notes col. We'll stick to basic schema.
                     subtotal: cartTotal,
                     shipping: 0,
                     taxes: taxes,
@@ -142,7 +204,10 @@ export default function CheckoutPage() {
                             </div>
                             {user ? (
                                 <button
-                                    onClick={() => supabase.auth.signOut()}
+                                    onClick={async () => {
+                                        await supabase.auth.signOut();
+                                        window.location.href = '/';
+                                    }}
                                     className="bg-gray-100 text-gray-800 font-bold py-2.5 px-6 rounded-xl hover:bg-gray-200 transition text-sm"
                                 >
                                     Log out
@@ -156,42 +221,94 @@ export default function CheckoutPage() {
 
                         {/* Shipping Address */}
                         <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                                <span className="bg-green-100 text-green-800 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
-                                Shipping Address
-                            </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">First name</label>
-                                    <input type="text" id="firstName" value={formData.firstName} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
-                                </div>
-                                <div>
-                                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">Last name</label>
-                                    <input type="text" id="lastName" value={formData.lastName} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
-                                </div>
-                                <div className="md:col-span-2">
-                                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                    <input type="text" id="address" value={formData.address} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" placeholder="Apartment, suite, etc." />
-                                </div>
-                                <div>
-                                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                                    <input type="text" id="city" value={formData.city} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">State</label>
-                                        <input type="text" id="state" value={formData.state} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="zip" className="block text-sm font-medium text-gray-700 mb-1">PIN Code</label>
-                                        <input type="text" id="zip" value={formData.zip} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
-                                    </div>
-                                </div>
-                                <div className="md:col-span-2">
-                                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                                    <input type="tel" id="phone" value={formData.phone} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
-                                </div>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                                    <span className="bg-green-100 text-green-800 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+                                    Shipping Address
+                                </h2>
+                                {isLoadingAddress && <span className="text-sm text-green-600 font-medium animate-pulse">Loading saved address...</span>}
                             </div>
+
+                            {/* Saved Address Display OR Form */}
+                            {!showAddressForm && savedAddress ? (
+                                <div className="border border-green-200 bg-green-50/50 rounded-xl p-6 relative">
+                                    <div className="absolute top-4 right-4 bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-md uppercase tracking-wider">
+                                        Saved Address
+                                    </div>
+                                    <h3 className="font-bold text-gray-900 mb-1">{savedAddress.firstName} {savedAddress.lastName}</h3>
+                                    <p className="text-gray-600 text-sm mb-1">{savedAddress.address}</p>
+                                    <p className="text-gray-600 text-sm mb-1">{savedAddress.city}, {savedAddress.state} {savedAddress.zip}</p>
+                                    <p className="text-gray-600 text-sm mb-6">Phone: {savedAddress.phone}</p>
+
+                                    <div className="flex items-center space-x-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setFormData(savedAddress);
+                                                setShowAddressForm(true);
+                                            }}
+                                            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+                                        >
+                                            Update Address
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setSavedAddress(null);
+                                                setFormData({ firstName: '', lastName: '', address: '', city: '', state: '', zip: '', phone: '' });
+                                                setShowAddressForm(true);
+                                            }}
+                                            className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition"
+                                        >
+                                            Delete & Use New
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {savedAddress && (
+                                        <div className="md:col-span-2 mb-2 flex justify-end">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowAddressForm(false)}
+                                                className="text-sm font-medium text-green-700 hover:text-green-800 underline"
+                                            >
+                                                Cancel and use saved address
+                                            </button>
+                                        </div>
+                                    )}
+                                    <div>
+                                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">First name</label>
+                                        <input type="text" id="firstName" value={formData.firstName} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">Last name</label>
+                                        <input type="text" id="lastName" value={formData.lastName} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                        <input type="text" id="address" value={formData.address} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" placeholder="Apartment, suite, etc." />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                        <input type="text" id="city" value={formData.city} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                                            <input type="text" id="state" value={formData.state} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="zip" className="block text-sm font-medium text-gray-700 mb-1">PIN Code</label>
+                                            <input type="text" id="zip" value={formData.zip} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
+                                        </div>
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                        <input type="tel" id="phone" value={formData.phone} onChange={handleInputChange} className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition" />
+                                    </div>
+                                </div>
+                            )}
                         </section>
 
                         {/* Payment Options */}
@@ -202,16 +319,38 @@ export default function CheckoutPage() {
                             </h2>
                             <div className="space-y-4">
                                 {/* UPI Option */}
-                                <label className={`flex items-center p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition ${paymentMethod === 'UPI' ? 'border-green-500 bg-green-50' : 'border-gray-200'}`}>
-                                    <input type="radio" name="payment" value="UPI" checked={paymentMethod === 'UPI'} onChange={(e) => setPaymentMethod(e.target.value)} className="w-5 h-5 text-green-600 accent-green-600" />
-                                    <div className="ml-4 flex-1">
-                                        <span className="block font-medium text-gray-900">UPI / QR (GPay, PhonePe, Paytm)</span>
-                                        <span className="block text-sm text-gray-500 mt-1">Pay quickly using any UPI app</span>
-                                    </div>
-                                    <svg className={`w-8 h-8 ${paymentMethod === 'UPI' ? 'text-green-600' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                                    </svg>
-                                </label>
+                                <div className={`border rounded-xl transition ${paymentMethod === 'UPI' ? 'border-green-500 bg-green-50' : 'border-gray-200'}`}>
+                                    <label className="flex items-center p-4 cursor-pointer">
+                                        <input type="radio" name="payment" value="UPI" checked={paymentMethod === 'UPI'} onChange={(e) => setPaymentMethod(e.target.value)} className="w-5 h-5 text-green-600 accent-green-600" />
+                                        <div className="ml-4 flex-1">
+                                            <span className="block font-medium text-gray-900">UPI / QR (GPay, PhonePe, Paytm)</span>
+                                            <span className="block text-sm text-gray-500 mt-1">Pay quickly using any UPI app</span>
+                                        </div>
+                                        <svg className={`w-8 h-8 ${paymentMethod === 'UPI' ? 'text-green-600' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                        </svg>
+                                    </label>
+
+                                    {paymentMethod === 'UPI' && finalTotal > 0 && (
+                                        <div className="p-4 border-t border-green-200 flex flex-col items-center text-center">
+                                            <p className="text-sm font-medium text-gray-800 mb-4">Scan the QR code below using any UPI App to pay securely.</p>
+                                            <div className="bg-white p-4 rounded-xl shadow-sm inline-block mb-3">
+                                                <QRCodeSVG
+                                                    value={`upi://pay?pa=reena.goyal@ptaxis&pn=Reena%20Goyal&am=${finalTotal}&cu=INR&tn=${orderRef}`}
+                                                    size={160}
+                                                    includeMargin={false}
+                                                />
+                                            </div>
+                                            <div className="bg-white border border-gray-200 flex items-center px-4 py-2 rounded-lg mb-1">
+                                                <span className="text-sm text-gray-600 mr-2">UPI ID:</span>
+                                                <code className="text-sm font-bold text-green-700 select-all tracking-wide">reena.goyal@ptaxis</code>
+                                            </div>
+                                            <p className="text-xs text-gray-500 mt-3 max-w-xs">
+                                                After a successful payment on your mobile device, please click the "Place Order" button on the right to complete your checkout.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
 
 
                                 {/* COD Option */}
