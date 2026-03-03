@@ -15,6 +15,7 @@
   html,
   body {
     @apply bg-brand-white text-brand-black antialiased selection:bg-brand-black selection:text-brand-white;
+    font-family: var(--font-inter), system-ui, sans-serif;
     min-height: 100vh;
   }
 }

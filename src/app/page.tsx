@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getProducts, Product } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
+import SkeletonProductCard from '@/components/SkeletonProductCard';
 import { ArrowRight, Beaker, CheckCircle, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -146,11 +147,15 @@ export default function Home() {
           </div>
 
           {loading ? (
-            <div className="text-center py-10 opacity-50 text-sm font-bold uppercase tracking-widest">Loading Best Sellers...</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <SkeletonProductCard key={i} />
+              ))}
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {featuredProducts.map((product: Product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} isBestSeller />
               ))}
             </div>
           )}
