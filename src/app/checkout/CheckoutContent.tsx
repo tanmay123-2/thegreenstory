@@ -71,14 +71,17 @@ export default function CheckoutPage() {
 
     const fetchLatestAddress = async (userId: string) => {
         setIsLoadingAddress(true);
+        // Safety timeout — if Supabase hangs, stop showing loader after 5s
+        const safetyTimer = setTimeout(() => setIsLoadingAddress(false), 5000);
         try {
+            // Use maybeSingle() instead of single() to avoid errors when user has no past orders
             const { data, error } = await supabase
                 .from('orders')
                 .select('first_name, last_name, address, city, state, zip, phone')
                 .eq('user_id', userId)
                 .order('created_at', { ascending: false })
                 .limit(1)
-                .single();
+                .maybeSingle();
 
             if (data && !error) {
                 const addressData = {
@@ -97,6 +100,7 @@ export default function CheckoutPage() {
         } catch (err) {
             console.error('Error fetching latest address:', err);
         } finally {
+            clearTimeout(safetyTimer);
             setIsLoadingAddress(false);
         }
     };
