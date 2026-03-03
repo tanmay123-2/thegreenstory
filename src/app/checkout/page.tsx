@@ -13,6 +13,7 @@ export default function CheckoutPage() {
     const [user, setUser] = useState<any>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -33,6 +34,7 @@ export default function CheckoutPage() {
     const [orderRef, setOrderRef] = useState('');
 
     useEffect(() => {
+        setIsMounted(true);
         setOrderRef(`ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`);
     }, []);
 
@@ -180,6 +182,17 @@ export default function CheckoutPage() {
             setIsSubmitting(false);
         }
     };
+
+    if (!isMounted) {
+        return (
+            <div className="bg-gray-50 min-h-screen py-12 flex items-center justify-center">
+                <div className="animate-pulse flex flex-col items-center">
+                    <div className="h-8 bg-gray-200 rounded w-48 mb-6"></div>
+                    <div className="h-64 bg-gray-200 rounded-2xl w-[800px] max-w-full"></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-gray-50 min-h-screen py-12">
