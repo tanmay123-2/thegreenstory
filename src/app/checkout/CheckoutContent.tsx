@@ -337,7 +337,7 @@ export default function CheckoutPage() {
                                             <div className="bg-white p-4 rounded-xl shadow-sm inline-block mb-3">
                                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                                 <img
-                                                    src={`https://chart.googleapis.com/chart?cht=qr&chs=160x160&chl=${encodeURIComponent(`upi://pay?pa=reena.goyal@ptaxis&pn=Reena%20Goyal&am=${finalTotal}&cu=INR&tn=${orderRef}`)}`}
+                                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(`upi://pay?pa=reena.goyal@ptaxis&pn=Reena%20Goyal&am=${finalTotal}&cu=INR&tn=${orderRef}`)}`}
                                                     alt="UPI QR Code"
                                                     width={160}
                                                     height={160}
