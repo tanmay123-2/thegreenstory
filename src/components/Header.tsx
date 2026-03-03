@@ -7,9 +7,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import MobileMenu from '@/components/MobileMenu';
 import { supabase } from '@/lib/supabaseClient';
+import { useWishlist } from '@/context/WishlistContext';
 
 export default function Header() {
   const { itemCount, setIsCartOpen } = useCart();
+  const { wishlistCount } = useWishlist();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -151,8 +153,13 @@ export default function Header() {
                 <User size={20} strokeWidth={1.5} />
               </Link>
             )}
-            <Link href="/wishlist" aria-label="Wishlist" className="hidden sm:block text-brand-black hover:opacity-70 transition-opacity">
+            <Link href="/wishlist" aria-label="Wishlist" className="hidden sm:block text-brand-black hover:opacity-70 transition-opacity relative">
               <Heart size={20} strokeWidth={1.5} />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 bg-brand-black text-brand-white text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-full flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
             <button
               aria-label="Cart"

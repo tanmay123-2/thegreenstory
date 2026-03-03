@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { CartProvider } from "../context/CartContext";
+import { WishlistProvider } from "../context/WishlistContext";
 import CartDrawer from "../components/CartDrawer";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -23,10 +24,12 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable}`}>
       <body className="flex flex-col min-h-screen">
         <CartProvider>
-          <Header />
-          <CartDrawer />
-          <main className="flex-grow">{children}</main>
-          <Footer />
+          <WishlistProvider>
+            <Header />
+            <CartDrawer />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>
