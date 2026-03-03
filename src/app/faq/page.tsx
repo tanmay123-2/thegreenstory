@@ -11,14 +11,6 @@ export default function FAQ() {
             question: "What is your return policy?",
             answer: "We offer a 7-day money-back guarantee. If a formulation doesn't work for your skin, simply return the unused portion for a full refund."
         },
-        {
-            question: "Why don't your products have fragrances?",
-            answer: "Added fragrances (both natural and synthetic) are common skin sensitizers and offer zero clinical benefit to the skin. We formulate strictly for efficacy and safety."
-        },
-        {
-            question: "How do I know the exact concentration of an active?",
-            answer: "We practice total transparency. The exact concentration of every core active ingredient is printed directly on the front label."
-        }
     ];
 
     return (

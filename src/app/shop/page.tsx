@@ -56,8 +56,7 @@ function ShopContent() {
             );
         }
 
-        // Filter by Category (Matching against product name since DB category is generic 'Hair Care')
-        // Strip the trailing 's' to match the plural filter (e.g. 'shampoos') to singular product names ('shampoo')
+        // Filter by Category
         if (selectedCategories.length > 0) {
             result = result.filter(product =>
                 selectedCategories.some(cat => {
@@ -77,7 +76,6 @@ function ShopContent() {
                 break;
             case 'Featured':
             default:
-                // keep original array order
                 break;
         }
 
@@ -87,23 +85,51 @@ function ShopContent() {
     return (
         <div className="bg-brand-gray min-h-screen">
             {/* Header Banner */}
-            <header className="bg-brand-white py-16 px-6 border-b border-brand-gray-dark/10">
+            <header className="bg-brand-white py-10 md:py-16 px-6 border-b border-brand-gray-dark/10">
                 <div className="max-w-7xl mx-auto">
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mb-4">
-                        {searchQuery ? `Search Results for "${searchQuery}"` : 'All Formulations'}
+                    <h1 className="text-3xl md:text-5xl font-bold tracking-tighter uppercase mb-3">
+                        {searchQuery ? `Results for "${searchQuery}"` : 'All Formulations'}
                     </h1>
                     <p className="text-[13px] text-brand-gray-dark font-medium max-w-2xl leading-relaxed">
                         {searchQuery
                             ? `Showing results matching your search terms.`
-                            : `Browse our complete range of science-backed skincare. Filter by your specific concerns or search for targeted active ingredients.`}
+                            : `Browse our complete range of science-backed haircare. Filter by category or view everything at once.`}
                     </p>
                 </div>
             </header>
 
-            <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row gap-8">
+            {/* Mobile Filter Bar */}
+            <div className="md:hidden bg-brand-white border-b border-brand-gray-dark/10 px-4 py-3 overflow-x-auto">
+                <div className="flex items-center gap-2 w-max">
+                    {/* "All" pill */}
+                    <button
+                        onClick={() => setSelectedCategories([])}
+                        className={`flex-shrink-0 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest border transition-colors whitespace-nowrap ${selectedCategories.length === 0
+                                ? 'bg-brand-black text-brand-white border-brand-black'
+                                : 'bg-brand-white text-brand-gray-dark border-brand-gray-dark/30 hover:border-brand-black hover:text-brand-black'
+                            }`}
+                    >
+                        All
+                    </button>
+                    {availableCategories.map(category => (
+                        <button
+                            key={category}
+                            onClick={() => handleCategoryToggle(category)}
+                            className={`flex-shrink-0 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest border transition-colors whitespace-nowrap ${selectedCategories.includes(category.toLowerCase())
+                                    ? 'bg-brand-black text-brand-white border-brand-black'
+                                    : 'bg-brand-white text-brand-gray-dark border-brand-gray-dark/30 hover:border-brand-black hover:text-brand-black'
+                                }`}
+                        >
+                            {category}
+                        </button>
+                    ))}
+                </div>
+            </div>
 
-                {/* Sidebar Filters */}
-                <aside className="w-full md:w-64 flex-shrink-0">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12 flex flex-col md:flex-row gap-8">
+
+                {/* Desktop Sidebar Filters */}
+                <aside className="hidden md:block w-64 flex-shrink-0">
                     <div className="sticky top-24 space-y-8">
                         <div>
                             <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4 border-b border-brand-gray-dark/10 pb-2">Filter By Category</h3>
@@ -126,9 +152,9 @@ function ShopContent() {
                 </aside>
 
                 {/* Product Grid */}
-                <main className="flex-1">
+                <main className="flex-1 min-w-0">
                     {loading ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                             {[...Array(6)].map((_, i) => (
                                 <SkeletonProductCard key={i} />
                             ))}
@@ -136,20 +162,22 @@ function ShopContent() {
                     ) : (
                         <>
                             {/* Utility Bar */}
-                            <div className="flex justify-between items-center mb-8 bg-brand-white p-4 border border-brand-gray-dark/10">
-                                <p className="text-[11px] font-bold text-brand-gray-dark uppercase tracking-widest">Showing {filteredAndSortedProducts.length} Products</p>
+                            <div className="flex justify-between items-center mb-5 bg-brand-white p-3 md:p-4 border border-brand-gray-dark/10">
+                                <p className="text-[11px] font-bold text-brand-gray-dark uppercase tracking-widest">
+                                    {filteredAndSortedProducts.length} Products
+                                </p>
                                 <select
                                     value={sortOption}
                                     onChange={(e) => setSortOption(e.target.value)}
                                     className="bg-transparent text-[11px] font-bold uppercase tracking-widest border-none cursor-pointer focus:outline-none"
                                 >
-                                    <option value="Featured">Sort By: Featured</option>
-                                    <option value="Price: Low to High">Price: Low to High</option>
-                                    <option value="Price: High to Low">Price: High to Low</option>
+                                    <option value="Featured">Sort: Featured</option>
+                                    <option value="Price: Low to High">Price: Low → High</option>
+                                    <option value="Price: High to Low">Price: High → Low</option>
                                 </select>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                                 {filteredAndSortedProducts.map((product) => (
                                     <ProductCard key={product.id} product={product} />
                                 ))}
@@ -180,23 +208,23 @@ export default function Shop() {
     return (
         <Suspense fallback={
             <div className="bg-brand-gray min-h-screen">
-                <header className="bg-brand-white py-16 px-6 border-b border-brand-gray-dark/10">
+                <header className="bg-brand-white py-10 md:py-16 px-6 border-b border-brand-gray-dark/10">
                     <div className="max-w-7xl mx-auto">
                         <div className="h-12 w-64 bg-brand-gray mb-4 animate-pulse"></div>
                         <div className="h-4 w-96 bg-brand-gray animate-pulse"></div>
                     </div>
                 </header>
-                <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row gap-8">
-                    <aside className="w-full md:w-64 flex-shrink-0 animate-pulse">
+                <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12 flex flex-col md:flex-row gap-8">
+                    <aside className="hidden md:block w-64 flex-shrink-0 animate-pulse">
                         <div className="h-4 w-32 bg-brand-white mb-8"></div>
                         <div className="h-4 w-32 bg-brand-white mb-8"></div>
                     </aside>
                     <main className="flex-1">
-                        <div className="flex justify-between items-center mb-8 bg-brand-white p-4 border border-brand-gray-dark/10 animate-pulse">
+                        <div className="flex justify-between items-center mb-5 bg-brand-white p-4 border border-brand-gray-dark/10 animate-pulse">
                             <div className="h-4 w-32 bg-brand-gray"></div>
                             <div className="h-4 w-32 bg-brand-gray"></div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                             {[...Array(6)].map((_, i) => (
                                 <SkeletonProductCard key={i} />
                             ))}

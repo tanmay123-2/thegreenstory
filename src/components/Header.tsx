@@ -82,7 +82,7 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-1 md:flex-none text-center md:text-left">
             <Link href="/" className="text-xl font-bold tracking-tighter text-brand-black uppercase">
-              The Green Story.
+              The Green Story
             </Link>
           </div>
 

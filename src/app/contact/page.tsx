@@ -30,7 +30,7 @@ export default function Contact() {
                     <div>
                         <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4 border-b border-brand-gray-dark/10 pb-2 inline-block px-12">Social & Support</h3>
                         <p className="text-[13px] text-brand-gray-dark font-medium mb-2">Instagram: (Link coming soon)</p>
-                        <p className="text-[13px] text-brand-gray-dark font-medium">WhatsApp Support: (Coming soon)</p>
+                        <p className="text-[13px] text-brand-gray-dark font-medium">WhatsApp Support: +91 9891790879</p>
                     </div>
                 </div>
             </main>

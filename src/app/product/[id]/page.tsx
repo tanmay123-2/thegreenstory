@@ -30,15 +30,15 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
     return (
         <div className="bg-brand-white">
-            <div className="max-w-7xl mx-auto px-6 py-8 md:py-16">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-16">
 
                 {/* Breadcrumb / Back */}
-                <Link href="/shop" className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-brand-gray-dark hover:text-brand-black transition-colors mb-8">
+                <Link href="/shop" className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-brand-gray-dark hover:text-brand-black transition-colors mb-6 md:mb-8">
                     <ArrowLeft size={14} strokeWidth={2} />
                     Back to Formulations
                 </Link>
 
-                <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-24">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-12 lg:gap-24">
                     {/* Image Block */}
                     <div className="w-full md:w-1/2">
                         <div className="relative aspect-square bg-brand-gray w-full border border-brand-gray-dark/10">
@@ -54,28 +54,28 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
                     {/* Product Details Block */}
                     <div className="w-full md:w-1/2 flex flex-col">
-                        <div className="border-b border-brand-gray-dark/10 pb-8 mb-8">
+                        <div className="border-b border-brand-gray-dark/10 pb-6 md:pb-8 mb-6 md:mb-8">
                             <div className="flex justify-between items-start mb-4">
                                 <p className="text-[11px] font-bold text-brand-black bg-brand-gray px-3 py-1 uppercase tracking-widest border border-brand-gray-dark/10">
                                     {product.category}
                                 </p>
-                                <p className="text-2xl font-bold">₹{product.price}</p>
+                                <p className="text-xl md:text-2xl font-bold">₹{product.price}</p>
                             </div>
 
-                            <div className="flex justify-between items-start mb-6 gap-4">
-                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter text-brand-black leading-[0.9]">
+                            <div className="flex justify-between items-start mb-4 md:mb-6 gap-4">
+                                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-tighter text-brand-black leading-tight md:leading-[0.9]">
                                     {product.name}
                                 </h1>
                                 <WishlistButton productId={product.id} />
                             </div>
 
-                            <p className="text-[14px] text-brand-gray-dark leading-relaxed font-medium">
+                            <p className="text-[13px] md:text-[14px] text-brand-gray-dark leading-relaxed font-medium">
                                 {product.description}
                             </p>
                         </div>
 
                         {/* Interactive Actions */}
-                        <div className="mb-10">
+                        <div className="mb-8 md:mb-10">
                             <ProductActions product={product} />
                         </div>
 

@@ -147,7 +147,15 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                         </button>
 
                                         <div className="mb-8">
-                                            <h4 className="font-bold text-[11px] uppercase tracking-widest text-brand-gray-dark mb-4 border-b border-brand-gray-dark/10 pb-2">By Category</h4>
+                                            <Link
+                                                href="/shop"
+                                                onClick={onClose}
+                                                className="flex items-center justify-between w-full mb-5 pb-4 border-b border-brand-gray-dark/10 text-[14px] font-bold uppercase tracking-widest text-brand-black hover:opacity-70 transition-opacity"
+                                            >
+                                                Shop All Products
+                                                <span className="text-[10px] bg-brand-gray px-2 py-0.5 font-bold uppercase tracking-widest">All</span>
+                                            </Link>
+                                            <h4 className="font-bold text-[11px] uppercase tracking-widest text-brand-gray-dark mb-4">By Category</h4>
                                             <ul className="flex flex-col gap-4 text-[14px] font-bold uppercase tracking-widest">
                                                 {['Shampoos', 'Oils', 'Conditioners', 'Toners'].map(item => (
                                                     <li key={item}>

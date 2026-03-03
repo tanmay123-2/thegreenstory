@@ -50,18 +50,18 @@ export default function ProductCard({ product, isBestSeller = false }: ProductCa
             </div>
 
             {/* Product Image */}
-            <Link href={`/product/${product.id}`} className="block relative aspect-square mb-6 overflow-hidden bg-brand-gray mx-4 group/image">
+            <Link href={`/product/${product.id}`} className="block relative aspect-square mb-3 overflow-hidden bg-brand-gray mx-2 md:mx-4 group/image">
                 <Image
                     src={product.image}
                     alt={product.name}
                     fill
                     className="object-cover object-center group-hover/image:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-brand-black/5 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300" />
-                {/* Quick Add hover button */}
+                {/* Quick Add hover button — desktop only */}
                 <button
-                    className="absolute bottom-4 left-4 right-4 text-[11px] font-bold uppercase tracking-widest bg-brand-white text-brand-black px-4 py-3 translate-y-4 opacity-0 group-hover/image:translate-y-0 group-hover/image:opacity-100 transition-all duration-300 hover:bg-brand-black hover:text-brand-white z-10"
+                    className="hidden md:block absolute bottom-4 left-4 right-4 text-[11px] font-bold uppercase tracking-widest bg-brand-white text-brand-black px-4 py-3 translate-y-4 opacity-0 group-hover/image:translate-y-0 group-hover/image:opacity-100 transition-all duration-300 hover:bg-brand-black hover:text-brand-white z-10"
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -72,7 +72,19 @@ export default function ProductCard({ product, isBestSeller = false }: ProductCa
                 </button>
             </Link>
 
-            <div className="flex flex-col flex-1 px-4 pb-4">
+            {/* Mobile-only persistent Add to Cart button */}
+            <button
+                className="md:hidden mx-2 mb-2.5 w-[calc(100%-1rem)] text-[10px] font-bold uppercase tracking-widest bg-brand-black text-brand-white py-2.5 hover:bg-brand-gray-dark transition-colors active:scale-95 transform"
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    addItem(product, 1);
+                }}
+            >
+                + Add to Cart
+            </button>
+
+            <div className="flex flex-col flex-1 px-2 md:px-4 pb-3 md:pb-4">
                 <p className="text-[10px] uppercase font-bold tracking-widest text-brand-gray-dark mb-2">
                     {product.category}
                 </p>

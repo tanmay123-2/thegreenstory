@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import { CartProvider } from "../context/CartContext";
 import { WishlistProvider } from "../context/WishlistContext";
 import CartDrawer from "../components/CartDrawer";
+import MobileBottomBar from "../components/MobileBottomBar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -27,8 +28,9 @@ export default function RootLayout({
           <WishlistProvider>
             <Header />
             <CartDrawer />
-            <main className="flex-grow">{children}</main>
+            <main className="flex-grow pb-16 md:pb-0">{children}</main>
             <Footer />
+            <MobileBottomBar />
           </WishlistProvider>
         </CartProvider>
       </body>

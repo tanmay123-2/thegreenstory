@@ -6,7 +6,7 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
                 <div className="col-span-1 md:col-span-2">
                     <Link href="/" className="block text-2xl font-bold uppercase tracking-tighter mb-4">
-                        The Green Story.
+                        The Green Story
                     </Link>
                     <p className="text-[13px] leading-relaxed max-w-sm font-medium text-brand-gray-dark">
                         At The Green Story, we believe skincare should be simple, pure, and close to nature. Every product is handcrafted in small batches using carefully selected herbal ingredients.
@@ -24,7 +24,7 @@ export default function Footer() {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-brand-gray-dark/10 flex flex-col md:flex-row items-center justify-between text-[11px] font-medium tracking-wide text-brand-gray-dark uppercase">
+            <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-brand-gray-dark/10 flex flex-col items-center md:flex-row md:justify-between text-center md:text-left text-[11px] font-medium tracking-wide text-brand-gray-dark uppercase gap-4 md:gap-0">
                 <p>&copy; {new Date().getFullYear()} The Green Story. All rights reserved.</p>
                 <div className="flex gap-4 mt-4 md:mt-0">
                     <span>Authentic.</span>
