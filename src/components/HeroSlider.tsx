@@ -6,24 +6,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const slides = [
     {
-        src: '/slider image 1.png',
+        src: '/slider image 1.1.png',
         alt: 'The Green Story – Natural Haircare',
     },
     {
-        src: '/slider image 2.jpeg',
+        src: '/slider image 1.2.png',
         alt: 'The Green Story – Herbal Formulations',
     },
     {
-        src: '/slider image 3.jpeg',
+        src: '/slider image 1.3.png',
         alt: 'The Green Story – Ayurvedic Oils',
     },
     {
-        src: '/slider image 4.jpeg',
+        src: '/slider image 1.4.png',
         alt: 'The Green Story – Pure Ingredients',
+    },
+    {
+        src: '/slider image 1.5.png',
+        alt: 'The Green Story – Handcrafted Care',
     },
 ];
 
-const AUTOPLAY_INTERVAL = 4000;
+const AUTOPLAY_INTERVAL = 2500;
 
 export default function HeroSlider() {
     const [current, setCurrent] = useState(0);
@@ -86,8 +90,8 @@ export default function HeroSlider() {
                         alt={slides[current].alt}
                         fill
                         priority={current === 0}
-                        className="object-cover object-center"
-                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-contain object-center"
+                        sizes="100vw"
                     />
                     {/* Subtle gradient overlay for depth */}
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-black/20 to-transparent" />
@@ -102,8 +106,8 @@ export default function HeroSlider() {
                         onClick={() => goTo(i, i > current ? 1 : -1)}
                         aria-label={`Go to slide ${i + 1}`}
                         className={`transition-all duration-300 rounded-full ${i === current
-                                ? 'bg-brand-white w-6 h-1.5'
-                                : 'bg-brand-white/50 w-1.5 h-1.5 hover:bg-brand-white/80'
+                            ? 'bg-brand-white w-6 h-1.5'
+                            : 'bg-brand-white/50 w-1.5 h-1.5 hover:bg-brand-white/80'
                             }`}
                     />
                 ))}

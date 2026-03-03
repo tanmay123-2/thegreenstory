@@ -57,14 +57,14 @@ function AnimatedHeadline() {
   if (!mounted) {
     return (
       <h1 className="font-bold tracking-tighter text-brand-black mb-6 leading-[0.9]">
-        <span className="block text-3xl md:text-5xl lg:text-7xl">{fullText}</span>
+        <span className="block whitespace-nowrap" style={{ fontSize: 'clamp(1.1rem, 5.8vw, 4.5rem)' }}>{fullText}</span>
       </h1>
     );
   }
 
   return (
     <h1 className="font-bold tracking-tighter text-brand-black mb-6 pb-3" style={{ perspective: '800px' }}>
-      <span className="block text-3xl md:text-5xl lg:text-7xl" aria-label={fullText}>
+      <span className="block whitespace-nowrap" aria-label={fullText} style={{ fontSize: 'clamp(1.1rem, 5.8vw, 4.5rem)' }}>
         {fullText.split('').map((char, i) => (
           <motion.span
             key={i}
@@ -165,7 +165,7 @@ export default function Home() {
         transition={{ duration: 0.6 }}
         className="w-full border-b border-brand-gray-dark/10"
       >
-        <div className="w-full aspect-[16/7] md:aspect-[16/5] relative">
+        <div className="w-full aspect-[3/2] md:aspect-[16/7] relative">
           <HeroSlider />
         </div>
       </motion.section>
