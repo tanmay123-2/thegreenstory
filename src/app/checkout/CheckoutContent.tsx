@@ -31,6 +31,14 @@ export default function CheckoutPage() {
 
     const [paymentMethod, setPaymentMethod] = useState('UPI');
     const [orderRef, setOrderRef] = useState('');
+    const [copiedUpi, setCopiedUpi] = useState(false);
+
+    const handleCopyUpi = () => {
+        navigator.clipboard.writeText('reena.goyal@ptaxis').then(() => {
+            setCopiedUpi(true);
+            setTimeout(() => setCopiedUpi(false), 2000);
+        });
+    };
 
     useEffect(() => {
         setOrderRef(`ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`);
@@ -344,9 +352,17 @@ export default function CheckoutPage() {
                                                     height={160}
                                                 />
                                             </div>
-                                            <div className="bg-brand-gray border border-brand-gray-dark/10 flex items-center px-4 py-2 mb-1">
-                                                <span className="text-[11px] font-bold uppercase tracking-widest text-brand-gray-dark mr-2">UPI ID:</span>
-                                                <code className="text-sm font-bold text-brand-black select-all tracking-wide">reena.goyal@ptaxis</code>
+                                            <div className="bg-brand-gray border border-brand-gray-dark/10 flex items-center justify-between px-4 py-2.5 mb-1 w-full max-w-xs">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gray-dark">UPI ID:</span>
+                                                    <code className="text-sm font-bold text-brand-black tracking-wide">reena.goyal@ptaxis</code>
+                                                </div>
+                                                <button
+                                                    onClick={handleCopyUpi}
+                                                    className={`ml-3 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 border transition-all ${copiedUpi ? 'bg-brand-black text-brand-white border-brand-black' : 'bg-brand-white text-brand-gray-dark border-brand-gray-dark/30 hover:border-brand-black hover:text-brand-black'}`}
+                                                >
+                                                    {copiedUpi ? '✓ Copied!' : 'Copy'}
+                                                </button>
                                             </div>
                                             <p className="text-xs text-brand-gray-dark mt-3 max-w-xs">
                                                 After payment, click &quot;Place Order&quot; to complete checkout.

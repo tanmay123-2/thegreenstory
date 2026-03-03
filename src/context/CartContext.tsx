@@ -3,7 +3,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product } from '@/lib/data';
 import { supabase } from '@/lib/supabaseClient';
-import { products as allProducts } from '@/lib/data';
 
 interface CartItem {
     product: Product;
@@ -24,42 +23,65 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const CART_STORAGE_KEY = 'greenstory_cart';
+
+function saveCartToStorage(items: CartItem[]) {
+    try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    } catch (e) {
+        console.error('Failed to save cart to localStorage');
+    }
+}
+
+function loadCartFromStorage(): CartItem[] {
+    try {
+        const saved = localStorage.getItem(CART_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
     const [user, setUser] = useState<any>(null);
 
-    // 1. Initialize Auth and Load Cart
+    // Initialize: always load from localStorage first (instant), then sync with Supabase if logged in
     useEffect(() => {
+        // Load localStorage immediately so cart is never empty on first render
+        const localItems = loadCartFromStorage();
+        if (localItems.length > 0) {
+            setItems(localItems);
+        }
+
         const initAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             const currentUser = session?.user ?? null;
             setUser(currentUser);
 
             if (currentUser) {
-                // Load from Supabase
-                const { data, error } = await supabase
-                    .from('cart_items')
-                    .select('*')
-                    .eq('user_id', currentUser.id);
+                // Try to load from Supabase — but keep localStorage as fallback
+                try {
+                    const { data, error } = await supabase
+                        .from('cart_items')
+                        .select('product_id, quantity, product:products(id, name, price, image, category, description)')
+                        .eq('user_id', currentUser.id);
 
-                if (data && !error) {
-                    const supabaseItems = data.map(row => {
-                        const prod = allProducts.find(p => p.id === row.product_id);
-                        return prod ? { product: prod, quantity: row.quantity } : null;
-                    }).filter(Boolean) as CartItem[];
-                    setItems(supabaseItems);
-                }
-            } else {
-                // Load from LocalStorage
-                const savedCart = localStorage.getItem('greenstory_cart');
-                if (savedCart) {
-                    try {
-                        setItems(JSON.parse(savedCart));
-                    } catch (e) {
-                        console.error('Failed to parse local cart');
+                    if (data && !error && data.length > 0) {
+                        const supabaseItems = data
+                            .filter((row: any) => row.product)
+                            .map((row: any) => ({
+                                product: row.product as Product,
+                                quantity: row.quantity,
+                            }));
+                        setItems(supabaseItems);
+                        saveCartToStorage(supabaseItems); // Keep localStorage in sync
                     }
+                    // If Supabase returns empty or errors, we keep whatever was in localStorage
+                } catch (err) {
+                    console.error('Failed to load cart from Supabase, using local cart', err);
                 }
             }
             setIsInitialized(true);
@@ -70,39 +92,46 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             const currentUser = session?.user ?? null;
             setUser(currentUser);
-            // Re-fetch cart on auth state change (login/logout)
+
             if (currentUser) {
-                supabase.from('cart_items').select('*').eq('user_id', currentUser.id).then(({ data }) => {
-                    if (data) {
-                        const supabaseItems = data.map(row => {
-                            const prod = allProducts.find(p => p.id === row.product_id);
-                            return prod ? { product: prod, quantity: row.quantity } : null;
-                        }).filter(Boolean) as CartItem[];
-                        setItems(supabaseItems);
-                    }
-                });
-            } else {
-                setItems([]); // Clear state on logout
+                // Load from Supabase on login
+                supabase
+                    .from('cart_items')
+                    .select('product_id, quantity, product:products(id, name, price, image, category, description)')
+                    .eq('user_id', currentUser.id)
+                    .then(({ data }) => {
+                        if (data && data.length > 0) {
+                            const supabaseItems = data
+                                .filter((row: any) => row.product)
+                                .map((row: any) => ({
+                                    product: row.product as Product,
+                                    quantity: row.quantity,
+                                }));
+                            setItems(supabaseItems);
+                            saveCartToStorage(supabaseItems);
+                        }
+                        // On login, if Supabase cart is empty, keep localStorage cart as-is
+                    });
             }
+            // Note: on logout we intentionally do NOT clear items — keep them in localStorage
+            // so users don't lose their cart when they log out
         });
 
         return () => subscription.unsubscribe();
     }, []);
 
-    // 2. Save to LocalStorage if NOT logged in
+    // Always persist to localStorage whenever items change (after initialization)
     useEffect(() => {
-        if (isInitialized && !user) {
-            localStorage.setItem('greenstory_cart', JSON.stringify(items));
+        if (isInitialized) {
+            saveCartToStorage(items);
         }
-    }, [items, isInitialized, user]);
+    }, [items, isInitialized]);
 
-    // Actions
     const addItem = async (product: Product, quantity = 1) => {
         let newQuantity = quantity;
 
         setItems((currentItems) => {
             const existingItem = currentItems.find((item) => item.product.id === product.id);
-
             if (existingItem) {
                 newQuantity = existingItem.quantity + quantity;
                 return currentItems.map((item) =>
@@ -111,14 +140,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
                         : item
                 );
             }
-
             return [...currentItems, { product, quantity }];
         });
 
         if (user) {
             await supabase
                 .from('cart_items')
-                .upsert({ user_id: user.id, product_id: product.id, quantity: newQuantity }, { onConflict: 'user_id,product_id' });
+                .upsert(
+                    { user_id: user.id, product_id: product.id, quantity: newQuantity },
+                    { onConflict: 'user_id,product_id' }
+                );
         }
 
         setIsCartOpen(true);
@@ -145,12 +176,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const clearCart = async () => {
         setItems([]);
+        saveCartToStorage([]);
         if (user) {
             await supabase.from('cart_items').delete().eq('user_id', user.id);
-        } else {
-            localStorage.removeItem('greenstory_cart');
         }
-    }
+    };
 
     const cartTotal = items.reduce(
         (total, item) => total + item.product.price * item.quantity,
