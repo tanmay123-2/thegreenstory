@@ -1,30 +1,6 @@
 'use client';
 
-import Image from 'next/image';
 import { motion } from 'framer-motion';
-
-const reviewImages = [
-    {
-        src: '/reviews/WhatsApp Image 2026-03-03 at 2.27.44 PM.jpeg',
-        alt: 'Customer review 1',
-    },
-    {
-        src: '/reviews/WhatsApp Image 2026-03-03 at 2.27.44 PM (1).jpeg',
-        alt: 'Customer review 2',
-    },
-    {
-        src: '/reviews/WhatsApp Image 2026-03-03 at 2.27.45 PM.jpeg',
-        alt: 'Customer review 3',
-    },
-    {
-        src: '/reviews/WhatsApp Image 2026-03-03 at 2.27.45 PM (1).jpeg',
-        alt: 'Customer review 4',
-    },
-    {
-        src: '/reviews/WhatsApp Image 2026-03-03 at 2.27.45 PM (2).jpeg',
-        alt: 'Customer review 5',
-    },
-];
 
 const stats = [
     { label: 'Happy Customers', value: '100+' },
@@ -34,11 +10,6 @@ const stats = [
 const fadeInUp = {
     hidden: { opacity: 0, y: 24 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
-
-const stagger = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.1 } },
 };
 
 export default function TestimonialsPage() {
@@ -71,51 +42,18 @@ export default function TestimonialsPage() {
                 </div>
             </div>
 
-            {/* Review Images Grid — 4 per row */}
+            {/* Coming Soon */}
             <motion.div
-                className="max-w-6xl mx-auto px-4 md:px-6 py-12"
-                variants={stagger}
+                className="max-w-6xl mx-auto px-4 md:px-6 py-24 flex flex-col items-center justify-center text-center"
+                variants={fadeInUp}
                 initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-50px' }}
+                animate="visible"
             >
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3">
-                    {reviewImages.map((img, i) => (
-                        <motion.div
-                            key={i}
-                            variants={fadeInUp}
-                            className="relative overflow-hidden bg-brand-white border border-brand-gray-dark/10"
-                        >
-                            <Image
-                                src={img.src}
-                                alt={img.alt}
-                                width={400}
-                                height={300}
-                                className="w-full h-auto object-contain"
-                                sizes="(max-width: 640px) 50vw, 25vw"
-                            />
-                        </motion.div>
-                    ))}
-                </div>
-
-                {/* Review Video */}
-                <motion.div
-                    initial={{ opacity: 0, y: 24 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                    className="mt-2 md:mt-3 bg-brand-white border border-brand-gray-dark/10 overflow-hidden"
-                >
-                    <video
-                        controls
-                        playsInline
-                        preload="metadata"
-                        className="w-full h-auto max-h-[70vh] object-contain"
-                    >
-                        <source src="/reviews/WhatsApp%20Video%202026-03-03%20at%202.27.57%20PM.mp4" type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
-                </motion.div>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-brand-gray-dark mb-4">Reviews</p>
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tighter uppercase mb-4">More Coming Soon</h2>
+                <p className="text-[13px] text-brand-gray-dark font-medium max-w-md leading-relaxed">
+                    We are collecting real customer reviews and will be sharing them here shortly. Thank you for your patience.
+                </p>
             </motion.div>
 
         </div>
