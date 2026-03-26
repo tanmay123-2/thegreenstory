@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
-import { Package, User, MapPin, CreditCard, ChevronDown } from 'lucide-react';
+import { Package, User, MapPin, CreditCard, ChevronDown, RefreshCw } from 'lucide-react';
 
 interface OrderItem {
     id: string;
@@ -43,6 +42,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function AdminOrders() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState('');
     const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
     const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
@@ -52,38 +52,41 @@ export default function AdminOrders() {
 
     const fetchOrders = async () => {
         setLoading(true);
-        const { data, error } = await supabase
-            .from('orders')
-            .select(`
-                *,
-                order_items (
-                    id,
-                    quantity,
-                    price_at_time,
-                    products ( name, image )
-                )
-            `)
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('Error fetching orders:', error);
-        } else {
-            setOrders((data as unknown as Order[]) || []);
+        setFetchError('');
+        try {
+            const res = await fetch('/api/admin/orders');
+            if (!res.ok) {
+                const err = await res.json();
+                setFetchError(err.error || 'Failed to load orders.');
+            } else {
+                const data: Order[] = await res.json();
+                setOrders(data);
+            }
+        } catch {
+            setFetchError('Network error loading orders.');
         }
         setLoading(false);
     };
 
     const handleStatusChange = async (orderId: string, newStatus: string) => {
         setUpdatingStatus(orderId);
-        const { error } = await supabase
-            .from('orders')
-            .update({ status: newStatus })
-            .eq('id', orderId);
+        try {
+            const res = await fetch('/api/admin/orders', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: orderId, status: newStatus }),
+            });
 
-        if (!error) {
-            setOrders(prev =>
-                prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o)
-            );
+            if (res.ok) {
+                setOrders(prev =>
+                    prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o)
+                );
+            } else {
+                const err = await res.json();
+                alert(`Status update failed: ${err.error || 'Unknown error'}`);
+            }
+        } catch {
+            alert('Network error. Please try again.');
         }
         setUpdatingStatus(null);
     };
@@ -94,6 +97,20 @@ export default function AdminOrders() {
                 {[...Array(4)].map((_, i) => (
                     <div key={i} className="bg-white h-20 animate-pulse rounded border border-gray-200" />
                 ))}
+            </div>
+        );
+    }
+
+    if (fetchError) {
+        return (
+            <div className="text-center py-16 border border-dashed border-red-200 rounded bg-red-50">
+                <p className="text-red-600 font-medium text-sm">{fetchError}</p>
+                <button
+                    onClick={fetchOrders}
+                    className="mt-4 text-xs font-bold uppercase tracking-widest border border-red-300 px-3 py-1.5 text-red-500 hover:bg-red-100 transition"
+                >
+                    Retry
+                </button>
             </div>
         );
     }
@@ -111,8 +128,8 @@ export default function AdminOrders() {
         <div className="space-y-3">
             <div className="flex items-center justify-between mb-4">
                 <p className="text-sm text-gray-500 font-medium">{orders.length} total orders</p>
-                <button onClick={fetchOrders} className="text-xs font-bold uppercase tracking-widest border border-gray-300 px-3 py-1.5 hover:bg-gray-50 transition">
-                    Refresh
+                <button onClick={fetchOrders} className="text-xs font-bold uppercase tracking-widest border border-gray-300 px-3 py-1.5 hover:bg-gray-50 transition flex items-center gap-1.5">
+                    <RefreshCw size={11} /> Refresh
                 </button>
             </div>
 
@@ -169,6 +186,9 @@ export default function AdminOrders() {
                                 </p>
                                 <p className="text-sm font-bold text-gray-900">{order.first_name} {order.last_name}</p>
                                 <p className="text-sm text-gray-500 mt-1">{order.phone}</p>
+                                {order.user_email && (
+                                    <p className="text-xs text-gray-400 mt-1 font-mono">{order.user_email}</p>
+                                )}
                                 <p className="text-xs text-gray-400 mt-1 font-mono">Payment: {order.payment_method}</p>
                             </div>
 

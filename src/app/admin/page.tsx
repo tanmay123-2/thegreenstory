@@ -6,6 +6,9 @@ import { Lock, ShoppingBag, Package, LogOut, Eye, EyeOff } from 'lucide-react';
 
 const AdminOrders = dynamic(() => import('./AdminOrders'), { ssr: false });
 const AdminProducts = dynamic(() => import('./AdminProducts'), { ssr: false });
+const AdminUsers = dynamic(() => import('./AdminUsers'), { ssr: false });
+const AdminWishlists = dynamic(() => import('./AdminWishlists'), { ssr: false });
+const AdminCarts = dynamic(() => import('./AdminCarts'), { ssr: false });
 
 const SESSION_KEY = 'gs_admin_auth';
 
@@ -15,7 +18,7 @@ export default function AdminPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
+    const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'users' | 'wishlists' | 'carts'>('orders');
 
     // Check session on mount
     useEffect(() => {
@@ -141,10 +144,13 @@ export default function AdminPage() {
                     {[
                         { key: 'orders', label: 'Orders', icon: ShoppingBag },
                         { key: 'products', label: 'Products', icon: Package },
+                        { key: 'users', label: 'Users', icon: Eye },
+                        { key: 'wishlists', label: 'Wishlists', icon: Eye },
+                        { key: 'carts', label: 'Carts', icon: ShoppingBag },
                     ].map(({ key, label, icon: Icon }) => (
                         <button
                             key={key}
-                            onClick={() => setActiveTab(key as 'orders' | 'products')}
+                            onClick={() => setActiveTab(key as any)}
                             className={`flex items-center gap-2 px-5 py-3 text-[11px] font-bold uppercase tracking-widest border-b-2 transition ${activeTab === key
                                     ? 'border-gray-900 text-gray-900'
                                     : 'border-transparent text-gray-400 hover:text-gray-600'
@@ -160,6 +166,9 @@ export default function AdminPage() {
             <main className="max-w-7xl mx-auto px-5 py-8">
                 {activeTab === 'orders' && <AdminOrders />}
                 {activeTab === 'products' && <AdminProducts />}
+                {activeTab === 'users' && <AdminUsers />}
+                {activeTab === 'wishlists' && <AdminWishlists />}
+                {activeTab === 'carts' && <AdminCarts />}
             </main>
         </div>
     );

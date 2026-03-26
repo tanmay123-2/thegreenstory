@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import { Save, RefreshCw, Loader } from 'lucide-react';
 
 interface Product {
@@ -24,6 +23,7 @@ interface EditableProduct extends Product {
 export default function AdminProducts() {
     const [products, setProducts] = useState<EditableProduct[]>([]);
     const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState('');
 
     useEffect(() => {
         fetchProducts();
@@ -31,53 +31,94 @@ export default function AdminProducts() {
 
     const fetchProducts = async () => {
         setLoading(true);
-        const { data, error } = await supabase
-            .from('products')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (!error && data) {
-            setProducts(data.map(p => ({ ...p, _dirty: false, _saving: false, _saved: false })));
+        setFetchError('');
+        try {
+            const res = await fetch('/api/admin/products');
+            if (!res.ok) {
+                const err = await res.json();
+                setFetchError(err.error || 'Failed to load products.');
+            } else {
+                const data: Product[] = await res.json();
+                setProducts(data.map(p => ({ ...p, _dirty: false, _saving: false, _saved: false })));
+            }
+        } catch {
+            setFetchError('Network error loading products.');
         }
         setLoading(false);
     };
 
-    const handleChange = (id: string, field: keyof Product, value: string | number) => {
+    const handleChange = (id: string, field: keyof Product, value: string | number | string[]) => {
         setProducts(prev =>
             prev.map(p => p.id === id ? { ...p, [field]: value, _dirty: true, _saved: false } : p)
         );
     };
 
+    const handleArrayChange = (id: string, field: 'concerns' | 'ingredients', value: string) => {
+        const arrayValue = value.split(',').map(s => s.trim()).filter(Boolean);
+        handleChange(id, field, arrayValue);
+    };
+
     const handleSave = async (product: EditableProduct) => {
         setProducts(prev => prev.map(p => p.id === product.id ? { ...p, _saving: true } : p));
 
-        const { error } = await supabase
-            .from('products')
-            .update({
-                name: product.name,
-                description: product.description,
-                price: Number(product.price),
-                category: product.category,
-            })
-            .eq('id', product.id);
+        try {
+            const res = await fetch('/api/admin/products', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: product.id,
+                    name: product.name,
+                    description: product.description,
+                    price: Number(product.price),
+                    category: product.category,
+                    concerns: product.concerns,
+                    ingredients: product.ingredients,
+                }),
+            });
 
-        setProducts(prev =>
-            prev.map(p =>
-                p.id === product.id
-                    ? { ...p, _saving: false, _dirty: !!error, _saved: !error }
-                    : p
-            )
-        );
-
-        if (error) alert(`Save failed: ${error.message}`);
+            if (res.ok) {
+                setProducts(prev =>
+                    prev.map(p =>
+                        p.id === product.id
+                            ? { ...p, _saving: false, _dirty: false, _saved: true }
+                            : p
+                    )
+                );
+            } else {
+                const err = await res.json();
+                setProducts(prev =>
+                    prev.map(p => p.id === product.id ? { ...p, _saving: false } : p)
+                );
+                alert(`Save failed: ${err.error || 'Unknown error'}`);
+            }
+        } catch {
+            setProducts(prev =>
+                prev.map(p => p.id === product.id ? { ...p, _saving: false } : p)
+            );
+            alert('Network error. Please try again.');
+        }
     };
 
     if (loading) {
         return (
             <div className="space-y-3">
                 {[...Array(4)].map((_, i) => (
-                    <div key={i} className="bg-white h-16 animate-pulse rounded border border-gray-200" />
+                    <div key={i} className="bg-white h-24 animate-pulse rounded border border-gray-200" />
                 ))}
+            </div>
+        );
+    }
+
+    if (fetchError) {
+        return (
+            <div className="text-center py-16 border border-dashed border-red-200 rounded bg-red-50">
+                <p className="text-red-600 font-medium text-sm">{fetchError}</p>
+                <button
+                    onClick={fetchProducts}
+                    className="mt-4 text-xs font-bold uppercase tracking-widest border border-red-300 px-3 py-1.5 text-red-500 hover:bg-red-100 transition"
+                >
+                    Retry
+                </button>
             </div>
         );
     }
@@ -91,82 +132,115 @@ export default function AdminProducts() {
                 </button>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded overflow-hidden">
-                <table className="w-full text-sm">
-                    <thead>
-                        <tr className="bg-gray-50 border-b border-gray-200">
-                            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400">Product</th>
-                            <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400">Category</th>
-                            <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 w-36">Price (₹)</th>
-                            <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400">Description</th>
-                            <th className="px-4 py-3 w-24"></th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {products.map(product => (
-                            <tr key={product.id} className={product._dirty ? 'bg-amber-50' : ''}>
-                                {/* Name */}
-                                <td className="px-5 py-3">
+            <div className="space-y-4">
+                {products.map(product => (
+                    <div key={product.id} className={`bg-white border rounded p-5 transition ${product._dirty ? 'border-amber-300 bg-amber-50/30' : 'border-gray-200'}`}>
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                            {/* Visual reference */}
+                            <div className="md:col-span-2 flex flex-col items-center justify-center bg-gray-50 rounded p-2">
+                                <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-full mb-2" />
+                                <span className="text-[10px] text-gray-400 font-mono truncate w-full text-center" title={product.id}>{product.id.split('-')[0]}...</span>
+                            </div>
+
+                            {/* Main Info */}
+                            <div className="md:col-span-4 space-y-3">
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Name</label>
                                     <input
                                         type="text"
                                         value={product.name}
                                         onChange={e => handleChange(product.id, 'name', e.target.value)}
-                                        className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-600 focus:outline-none font-medium text-gray-900 py-0.5 transition"
+                                        className="w-full bg-transparent border-b border-gray-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none font-bold text-gray-900 py-1 transition"
                                     />
-                                </td>
-                                {/* Category */}
-                                <td className="px-4 py-3">
-                                    <input
-                                        type="text"
-                                        value={product.category}
-                                        onChange={e => handleChange(product.id, 'category', e.target.value)}
-                                        className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-600 focus:outline-none text-gray-600 py-0.5 transition"
-                                    />
-                                </td>
-                                {/* Price */}
-                                <td className="px-4 py-3">
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-gray-400">₹</span>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex-1">
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Category</label>
+                                        <input
+                                            type="text"
+                                            value={product.category}
+                                            onChange={e => handleChange(product.id, 'category', e.target.value)}
+                                            className="w-full bg-transparent border-b border-gray-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none text-sm text-gray-600 py-1 transition"
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Price (₹)</label>
                                         <input
                                             type="number"
                                             value={product.price}
                                             onChange={e => handleChange(product.id, 'price', e.target.value)}
-                                            className="w-24 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-600 focus:outline-none font-bold text-gray-900 py-0.5 transition"
+                                            className="w-full bg-transparent border-b border-gray-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none text-sm font-bold text-gray-900 py-1 transition"
                                         />
                                     </div>
-                                </td>
-                                {/* Description */}
-                                <td className="px-4 py-3">
-                                    <input
-                                        type="text"
+                                </div>
+                            </div>
+
+                            {/* Details (Description, Concerns, Ingredients) */}
+                            <div className="md:col-span-6 space-y-3">
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Description</label>
+                                    <textarea
                                         value={product.description}
                                         onChange={e => handleChange(product.id, 'description', e.target.value)}
-                                        className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-600 focus:outline-none text-gray-500 py-0.5 transition text-xs"
+                                        rows={2}
+                                        className="w-full bg-gray-50 border border-gray-200 rounded px-3 py-2 text-xs text-gray-600 focus:outline-none focus:border-gray-900 focus:bg-white transition resize-none"
                                     />
-                                </td>
-                                {/* Save */}
-                                <td className="px-4 py-3 text-right">
-                                    {product._saving ? (
-                                        <Loader size={14} className="animate-spin text-gray-400 ml-auto" />
-                                    ) : product._saved ? (
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-green-600">Saved ✓</span>
-                                    ) : (
-                                        <button
-                                            onClick={() => handleSave(product)}
-                                            disabled={!product._dirty}
-                                            className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 transition ml-auto ${product._dirty
-                                                    ? 'bg-gray-900 text-white hover:bg-gray-700'
-                                                    : 'bg-gray-100 text-gray-300 cursor-default'
-                                                }`}
-                                        >
-                                            <Save size={10} /> Save
-                                        </button>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1" title="Comma separated">Concerns (CSV)</label>
+                                        <input
+                                            type="text"
+                                            value={product.concerns?.join(', ') || ''}
+                                            onChange={e => handleArrayChange(product.id, 'concerns', e.target.value)}
+                                            placeholder="Acne, Fine Lines..."
+                                            className="w-full bg-gray-50 border border-gray-200 rounded px-3 py-1.5 text-xs text-gray-600 focus:outline-none focus:border-gray-900 focus:bg-white transition"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1" title="Comma separated">Ingredients (CSV)</label>
+                                        <input
+                                            type="text"
+                                            value={product.ingredients?.join(', ') || ''}
+                                            onChange={e => handleArrayChange(product.id, 'ingredients', e.target.value)}
+                                            placeholder="Aloe, Niacinamide..."
+                                            className="w-full bg-gray-50 border border-gray-200 rounded px-3 py-1.5 text-xs text-gray-600 focus:outline-none focus:border-gray-900 focus:bg-white transition"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end items-center gap-3">
+                            {product._saved && !product._dirty && (
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-green-600 flex items-center gap-1">
+                                    Active / Saved ✓
+                                </span>
+                            )}
+                            {product._dirty && !product._saving && (
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600">
+                                    Unsaved Changes
+                                </span>
+                            )}
+                            
+                            <button
+                                onClick={() => handleSave(product)}
+                                disabled={!product._dirty || product._saving}
+                                className={`flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest px-5 py-2 transition ${product._dirty && !product._saving
+                                        ? 'bg-black text-white hover:bg-gray-800'
+                                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    }`}
+                            >
+                                {product._saving ? (
+                                    <><Loader size={12} className="animate-spin" /> Saving...</>
+                                ) : (
+                                    <><Save size={12} /> Save Changes</>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
