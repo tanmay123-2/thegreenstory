@@ -18,7 +18,7 @@ export async function GET() {
 // PATCH /api/admin/products — update a product by id
 export async function PATCH(req: NextRequest) {
     const body = await req.json();
-    const { id, name, description, price, category, concerns, ingredients } = body;
+    const { id, name, description, price, compare_at_price, category, concerns, ingredients } = body;
 
     if (!id) {
         return NextResponse.json({ error: 'Product id is required.' }, { status: 400 });
@@ -30,6 +30,7 @@ export async function PATCH(req: NextRequest) {
             name, 
             description, 
             price: Number(price), 
+            compare_at_price: compare_at_price ? Number(compare_at_price) : null,
             category,
             concerns: concerns || [],
             ingredients: ingredients || []

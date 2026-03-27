@@ -8,6 +8,7 @@ interface Product {
     name: string;
     description: string;
     price: number;
+    compare_at_price?: number | null;
     category: string;
     image: string;
     concerns: string[];
@@ -47,7 +48,7 @@ export default function AdminProducts() {
         setLoading(false);
     };
 
-    const handleChange = (id: string, field: keyof Product, value: string | number | string[]) => {
+    const handleChange = (id: string, field: keyof Product, value: string | number | string[] | null) => {
         setProducts(prev =>
             prev.map(p => p.id === id ? { ...p, [field]: value, _dirty: true, _saved: false } : p)
         );
@@ -56,6 +57,36 @@ export default function AdminProducts() {
     const handleArrayChange = (id: string, field: 'concerns' | 'ingredients', value: string) => {
         const arrayValue = value.split(',').map(s => s.trim()).filter(Boolean);
         handleChange(id, field, arrayValue);
+    };
+
+    const handlePriceMath = (id: string, field: 'price' | 'compare_at_price' | 'discount', value: string) => {
+        const numValue = Number(value);
+        
+        setProducts(prev => prev.map(p => {
+            if (p.id !== id) return p;
+            
+            let newPrice = p.price;
+            let newCompare = p.compare_at_price || p.price; // fallback to current price if null
+            
+            if (field === 'price') {
+                newPrice = numValue;
+            } else if (field === 'compare_at_price') {
+                newCompare = numValue;
+                // Automatically fix if compare price is deleted/0
+                if (numValue === 0) newCompare = newPrice;
+            } else if (field === 'discount') {
+                // If they type a 20% discount on ₹100 original price -> new price is ₹80
+                newPrice = Math.round(newCompare * (1 - (numValue / 100)));
+            }
+            
+            return {
+                ...p,
+                price: newPrice,
+                compare_at_price: newCompare !== newPrice ? newCompare : null, // Nullify if same
+                _dirty: true,
+                _saved: false
+            };
+        }));
     };
 
     const handleSave = async (product: EditableProduct) => {
@@ -70,6 +101,7 @@ export default function AdminProducts() {
                     name: product.name,
                     description: product.description,
                     price: Number(product.price),
+                    compare_at_price: product.compare_at_price ? Number(product.compare_at_price) : null,
                     category: product.category,
                     concerns: product.concerns,
                     ingredients: product.ingredients,
@@ -153,23 +185,46 @@ export default function AdminProducts() {
                                         className="w-full bg-transparent border-b border-gray-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none font-bold text-gray-900 py-1 transition"
                                     />
                                 </div>
-                                <div className="flex gap-4">
-                                    <div className="flex-1">
+                                <div className="grid grid-cols-4 gap-4">
+                                    <div className="col-span-1">
                                         <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Category</label>
                                         <input
                                             type="text"
                                             value={product.category}
                                             onChange={e => handleChange(product.id, 'category', e.target.value)}
-                                            className="w-full bg-transparent border-b border-gray-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none text-sm text-gray-600 py-1 transition"
+                                            className="w-full bg-transparent border-b border-gray-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none text-sm text-gray-600 py-1.5 transition"
                                         />
                                     </div>
-                                    <div className="flex-1">
-                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Price (₹)</label>
+                                    <div className="col-span-1 border-l pl-4 border-gray-100">
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Original Price</label>
+                                        <input
+                                            type="number"
+                                            value={product.compare_at_price || ''}
+                                            placeholder={product.price.toString()}
+                                            onChange={e => handlePriceMath(product.id, 'compare_at_price', e.target.value)}
+                                            className="w-full bg-transparent border-b border-gray-200 hover:border-gray-300 focus:border-red-500 focus:outline-none text-sm text-gray-400 line-through py-1.5 transition"
+                                        />
+                                    </div>
+                                    <div className="col-span-1">
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-1">Discount %</label>
+                                        <div className="relative">
+                                            <input
+                                                type="number"
+                                                value={product.compare_at_price ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100) : ''}
+                                                onChange={e => handlePriceMath(product.id, 'discount', e.target.value)}
+                                                placeholder="0"
+                                                className="w-full bg-transparent border-b border-blue-200 hover:border-blue-300 focus:border-blue-500 focus:outline-none text-sm font-bold text-blue-600 py-1.5 transition pr-4"
+                                            />
+                                            <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-blue-400 font-bold">%</span>
+                                        </div>
+                                    </div>
+                                    <div className="col-span-1">
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-green-500 mb-1">Final Price</label>
                                         <input
                                             type="number"
                                             value={product.price}
-                                            onChange={e => handleChange(product.id, 'price', e.target.value)}
-                                            className="w-full bg-transparent border-b border-gray-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none text-sm font-bold text-gray-900 py-1 transition"
+                                            onChange={e => handlePriceMath(product.id, 'price', e.target.value)}
+                                            className="w-full bg-transparent border-b border-green-200 hover:border-green-300 focus:border-green-500 focus:outline-none text-sm font-bold text-green-600 py-1.5 transition"
                                         />
                                     </div>
                                 </div>

@@ -56,10 +56,24 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                     <div className="w-full md:w-1/2 flex flex-col">
                         <div className="border-b border-brand-gray-dark/10 pb-6 md:pb-8 mb-6 md:mb-8">
                             <div className="flex justify-between items-start mb-4">
-                                <p className="text-[11px] font-bold text-brand-black bg-brand-gray px-3 py-1 uppercase tracking-widest border border-brand-gray-dark/10">
-                                    {product.category}
-                                </p>
-                                <p className="text-xl md:text-2xl font-bold">₹{product.price}</p>
+                                <div className="flex gap-2 items-center">
+                                    <p className="text-[11px] font-bold text-brand-black bg-brand-gray px-3 py-1 uppercase tracking-widest border border-brand-gray-dark/10">
+                                        {product.category}
+                                    </p>
+                                    {product.compare_at_price && product.compare_at_price > product.price && (
+                                        <p className="text-[11px] font-bold text-white bg-red-600 px-3 py-1 uppercase tracking-widest">
+                                            {Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)}% OFF
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="text-right flex flex-col items-end">
+                                    <p className="text-xl md:text-2xl font-bold text-brand-black">₹{product.price}</p>
+                                    {product.compare_at_price && product.compare_at_price > product.price && (
+                                        <p className="text-sm md:text-md text-brand-gray-dark/50 line-through font-medium">
+                                            ₹{product.compare_at_price}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="flex justify-between items-start mb-4 md:mb-6 gap-4">
