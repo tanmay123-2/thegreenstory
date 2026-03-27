@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { revalidatePath } from 'next/cache';
 
 // GET /api/admin/orders — fetch all orders with items
 export async function GET() {
@@ -39,5 +40,8 @@ export async function PATCH(req: NextRequest) {
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
+    
+    revalidatePath('/', 'layout');
+    
     return NextResponse.json({ success: true });
 }
