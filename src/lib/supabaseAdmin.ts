@@ -3,7 +3,10 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+// We provide a fallback string here solely so the Next.js build process
+// doesn't crash when it collects page data. It will fail gracefully later
+// if the real key isn't provided in Netlify's environment variables.
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'MISSING_SERVICE_ROLE_KEY_IN_NETLIFY';
 
 export const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
     auth: {
