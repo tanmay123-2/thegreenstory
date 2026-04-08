@@ -17,17 +17,16 @@ const ingredients = [
 ];
 
 function IngredientTicker() {
-  // Duplicate so the strip loops seamlessly
   const set = [...ingredients, ...ingredients];
   return (
-    <div className="overflow-hidden border-y border-brand-gray-dark/10 bg-brand-gray select-none">
+    <div className="overflow-hidden border-y border-brand-border-light bg-brand-cream select-none">
       <div className="flex animate-ticker whitespace-nowrap py-3">
         {set.map((name, i) => (
           <span key={i} className="flex items-center gap-0">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-brand-gray-dark px-5">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-brand-muted px-5 font-sans">
               {name}
             </span>
-            <span className="text-brand-gray-dark/30 text-xs">·</span>
+            <span className="text-brand-gold text-xs">✦</span>
           </span>
         ))}
       </div>
@@ -56,14 +55,14 @@ function AnimatedHeadline() {
   useEffect(() => setMounted(true), []);
   if (!mounted) {
     return (
-      <h1 className="font-bold tracking-tighter text-brand-black mb-6 leading-[0.9]">
+      <h1 className="font-bold tracking-tighter text-brand-text mb-6 leading-[0.9]">
         <span className="block whitespace-nowrap" style={{ fontSize: 'clamp(1.1rem, 5.8vw, 4.5rem)' }}>{fullText}</span>
       </h1>
     );
   }
 
   return (
-    <h1 className="font-bold tracking-tighter text-brand-black mb-6 pb-3" style={{ perspective: '800px' }}>
+    <h1 className="font-bold tracking-tighter text-brand-text mb-6 pb-3" style={{ perspective: '800px' }}>
       <span className="block whitespace-nowrap" aria-label={fullText} style={{ fontSize: 'clamp(1.1rem, 5.8vw, 4.5rem)' }}>
         {fullText.split('').map((char, i) => (
           <motion.span
@@ -111,9 +110,9 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-brand-gray">
+    <div className="flex flex-col min-h-screen bg-brand-cream">
 
-      {/* Ingredient Ticker — overhead the Naturality section */}
+      {/* Ingredient Ticker */}
       <IngredientTicker />
 
       {/* Hero Text Section */}
@@ -121,12 +120,12 @@ export default function Home() {
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
-        className="w-full bg-brand-white border-b border-brand-gray-dark/10"
+        className="w-full bg-brand-ivory border-b border-brand-border-light"
       >
-        <motion.div variants={fadeInUp} className="max-w-7xl mx-auto flex flex-col justify-center px-5 py-10 md:p-16 lg:px-24 lg:py-20">
+        <motion.div variants={fadeInUp} className="max-w-7xl mx-auto flex flex-col justify-center px-5 py-12 md:p-16 lg:px-24 lg:py-24">
           <motion.span
             variants={fadeInUp}
-            className="inline-block px-3 py-1 bg-brand-gray text-brand-black text-[10px] uppercase font-bold tracking-widest w-fit mb-8 border border-brand-gray-dark/10"
+            className="inline-block px-3 py-1 bg-brand-gold/10 text-brand-gold-dark text-[10px] uppercase font-bold tracking-widest w-fit mb-8 border border-brand-gold/20 font-sans"
           >
             Ayurvedic
           </motion.span>
@@ -135,7 +134,7 @@ export default function Home() {
 
           <motion.p
             variants={fadeInUp}
-            className="text-base md:text-lg text-brand-gray-dark mb-10 max-w-xl font-medium leading-relaxed"
+            className="text-base md:text-lg text-brand-muted mb-10 max-w-xl font-medium leading-relaxed font-sans"
           >
             No fluff, no false promises. Formulated with proven active ingredients at optimal concentrations for visible results.
           </motion.p>
@@ -143,13 +142,13 @@ export default function Home() {
           <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-3">
             <Link
               href="/shop"
-              className="inline-block bg-brand-black text-brand-white px-8 py-3.5 md:py-4 text-[13px] font-bold uppercase tracking-widest text-center hover:bg-brand-gray-dark transition-colors"
+              className="inline-block bg-brand-green text-brand-ivory px-8 py-3.5 md:py-4 text-[13px] font-bold uppercase tracking-widest text-center hover:bg-brand-green-dark transition-colors font-sans"
             >
               Shop All
             </Link>
             <Link
               href="/routine"
-              className="inline-block bg-brand-white text-brand-black border border-brand-black px-8 py-3.5 md:py-4 text-[13px] font-bold uppercase tracking-widest text-center hover:bg-brand-gray transition-colors"
+              className="inline-block bg-brand-ivory text-brand-text border border-brand-green px-8 py-3.5 md:py-4 text-[13px] font-bold uppercase tracking-widest text-center hover:bg-brand-cream transition-colors font-sans"
             >
               Build Routine
             </Link>
@@ -163,7 +162,7 @@ export default function Home() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="w-full border-b border-brand-gray-dark/10"
+        className="w-full border-b border-brand-border-light"
       >
         <div className="w-full aspect-[3/2] md:aspect-[16/7] relative">
           <HeroSlider />
@@ -176,23 +175,23 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
         variants={staggerContainer}
-        className="bg-brand-white border-b border-brand-gray-dark/10"
+        className="bg-brand-ivory border-b border-brand-border-light"
       >
-        <div className="max-w-7xl mx-auto px-6 py-8 md:py-12 grid grid-cols-1 md:grid-cols-3 gap-8 divide-y md:divide-y-0 md:divide-x divide-brand-gray-dark/10">
+        <div className="max-w-7xl mx-auto px-6 py-10 md:py-14 grid grid-cols-1 md:grid-cols-3 gap-8 divide-y md:divide-y-0 md:divide-x divide-brand-border-light">
           <motion.div variants={fadeInUp} className="flex flex-col items-center text-center px-4 pt-4 md:pt-0">
-            <Beaker size={24} className="mb-4 text-brand-black" strokeWidth={1.5} />
+            <Beaker size={24} className="mb-4 text-brand-gold" strokeWidth={1.5} />
             <h3 className="text-[13px] font-bold uppercase tracking-widest mb-2">Gentle Yet Effective</h3>
-            <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed">Formulated to be kind to sensitive skin and scalp while delivering visible results.</p>
+            <p className="text-[13px] text-brand-muted font-medium leading-relaxed font-sans">Formulated to be kind to sensitive skin and scalp while delivering visible results.</p>
           </motion.div>
           <motion.div variants={fadeInUp} className="flex flex-col items-center text-center px-4 pt-8 md:pt-0">
-            <Search size={24} className="mb-4 text-brand-black" strokeWidth={1.5} />
+            <Search size={24} className="mb-4 text-brand-gold" strokeWidth={1.5} />
             <h3 className="text-[13px] font-bold uppercase tracking-widest mb-2">Purely Herbal</h3>
-            <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed">Inspired by traditional Indian herbal remedies.</p>
+            <p className="text-[13px] text-brand-muted font-medium leading-relaxed font-sans">Inspired by traditional Indian herbal remedies.</p>
           </motion.div>
           <motion.div variants={fadeInUp} className="flex flex-col items-center text-center px-4 pt-8 md:pt-0">
-            <CheckCircle size={24} className="mb-4 text-brand-black" strokeWidth={1.5} />
+            <CheckCircle size={24} className="mb-4 text-brand-gold" strokeWidth={1.5} />
             <h3 className="text-[13px] font-bold uppercase tracking-widest mb-2">Handcrafted</h3>
-            <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed">Crafted with care, not mass-produced in factories.</p>
+            <p className="text-[13px] text-brand-muted font-medium leading-relaxed font-sans">Crafted with care, not mass-produced in factories.</p>
           </motion.div>
         </div>
       </motion.section>
@@ -203,7 +202,7 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
         variants={fadeInUp}
-        className="py-16 md:py-24 px-6 bg-brand-white max-w-7xl mx-auto w-full"
+        className="py-20 md:py-28 px-6 bg-brand-ivory max-w-7xl mx-auto w-full"
       >
         <header className="flex justify-between items-end mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl font-bold tracking-tighter uppercase">Shop By Category</h2>
@@ -211,16 +210,16 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4">
           <Link
             href="/shop"
-            className="group relative h-20 md:h-32 bg-brand-black flex items-center justify-center border border-brand-black hover:bg-brand-gray-dark transition-colors col-span-2 md:col-span-1"
+            className="group relative h-20 md:h-32 bg-brand-green flex items-center justify-center border border-brand-green hover:bg-brand-green-dark transition-colors col-span-2 md:col-span-1"
           >
             <div className="text-center">
-              <span className="text-[13px] font-bold uppercase tracking-widest text-brand-white transition-colors">Shop All</span>
-              <p className="text-[10px] text-brand-white/60 uppercase tracking-widest mt-1">View Everything</p>
+              <span className="text-[13px] font-bold uppercase tracking-widest text-brand-ivory transition-colors font-sans">Shop All</span>
+              <p className="text-[10px] text-brand-ivory/60 uppercase tracking-widest mt-1 font-sans">View Everything</p>
             </div>
           </Link>
           {['Shampoos', 'Oils', 'Conditioners', 'Toners'].map((category) => (
-            <Link key={category} href={`/shop?category=${category.toLowerCase()}`} className="group relative h-20 md:h-32 bg-brand-gray flex items-center justify-center border border-transparent hover:border-brand-black transition-colors">
-              <span className="text-[13px] font-bold uppercase tracking-widest text-brand-black transition-colors">{category}</span>
+            <Link key={category} href={`/shop?category=${category.toLowerCase()}`} className="group relative h-20 md:h-32 bg-brand-cream flex items-center justify-center border border-transparent hover:border-brand-green transition-colors">
+              <span className="text-[13px] font-bold uppercase tracking-widest text-brand-text transition-colors font-sans">{category}</span>
             </Link>
           ))}
         </div>
@@ -232,12 +231,12 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
         variants={fadeInUp}
-        className="py-14 md:py-24 px-4 md:px-6 bg-brand-gray border-y border-brand-gray-dark/10"
+        className="py-20 md:py-28 px-4 md:px-6 bg-brand-cream border-y border-brand-border-light"
       >
         <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 gap-4 sm:gap-6">
             <h2 className="text-3xl font-bold tracking-tighter uppercase">Our Best Sellers</h2>
-            <Link href="/shop" className="group flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-brand-black hover:opacity-70 transition-opacity border-b border-brand-black pb-1">
+            <Link href="/shop" className="group flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-brand-text hover:text-brand-green transition-colors border-b border-brand-text pb-1 font-sans">
               View All Formulations
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </Link>

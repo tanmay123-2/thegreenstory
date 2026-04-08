@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { useToast } from '@/context/ToastContext';
 
 interface WishlistContextType {
     wishlistIds: Set<string>;
@@ -15,6 +16,7 @@ const WishlistContext = createContext<WishlistContextType | undefined>(undefined
 export function WishlistProvider({ children }: { children: ReactNode }) {
     const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set());
     const [user, setUser] = useState<any>(null);
+    const { addToast } = useToast();
 
     useEffect(() => {
         const init = async () => {
@@ -50,7 +52,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
     const toggleWishlist = async (productId: string) => {
         if (!user) {
-            alert('Please login to wishlist products');
+            addToast('Please login to save products to your wishlist', 'info');
             return;
         }
 
@@ -61,9 +63,11 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
                 next.delete(productId);
                 return next;
             });
+            addToast('Removed from wishlist', 'info');
         } else {
             await supabase.from('wishlists').insert([{ user_id: user.id, product_id: productId }]);
             setWishlistIds(prev => new Set(prev).add(productId));
+            addToast('Added to wishlist ♥', 'success');
         }
     };
 

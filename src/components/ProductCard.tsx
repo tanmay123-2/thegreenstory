@@ -18,7 +18,7 @@ const StarRating = ({ rating = 4.8, count = 124 }: { rating?: number; count?: nu
             {[1, 2, 3, 4, 5].map((star) => (
                 <svg
                     key={star}
-                    className={`w-3 h-3 ${star <= Math.round(rating) ? 'text-brand-black' : 'text-brand-gray-dark/20'}`}
+                    className={`w-3 h-3 ${star <= Math.round(rating) ? 'text-brand-gold' : 'text-brand-border'}`}
                     fill="currentColor"
                     viewBox="0 0 20 20"
                 >
@@ -26,7 +26,7 @@ const StarRating = ({ rating = 4.8, count = 124 }: { rating?: number; count?: nu
                 </svg>
             ))}
         </div>
-        <span className="text-[10px] font-bold text-brand-gray-dark tracking-wide">{rating} ({count})</span>
+        <span className="text-[10px] font-bold text-brand-muted tracking-wide font-sans">{rating} ({count})</span>
     </div>
 );
 
@@ -34,11 +34,11 @@ export default function ProductCard({ product, isBestSeller = false }: ProductCa
     const { addItem } = useCart();
 
     return (
-        <div className="group flex flex-col pt-4 border border-transparent hover:border-brand-gray-dark/20 transition-colors bg-brand-white relative">
+        <div className="group flex flex-col pt-4 border border-transparent hover:border-brand-border transition-colors bg-brand-ivory relative">
             {/* Best Seller Badge */}
             {isBestSeller && (
                 <div className="absolute top-2 left-2 z-20">
-                    <span className="bg-brand-black text-brand-white text-[9px] font-bold uppercase tracking-widest px-2 py-1">
+                    <span className="bg-brand-green text-brand-ivory text-[9px] font-bold uppercase tracking-widest px-2 py-1 font-sans">
                         Best Seller
                     </span>
                 </div>
@@ -50,7 +50,14 @@ export default function ProductCard({ product, isBestSeller = false }: ProductCa
             </div>
 
             {/* Product Image */}
-            <Link href={`/product/${product.id}`} className="block relative aspect-square mb-3 overflow-hidden bg-brand-gray mx-2 md:mx-4 group/image">
+            <Link href={`/product/${product.id}`} className="block relative aspect-square mb-3 overflow-hidden bg-brand-cream mx-2 md:mx-4 group/image">
+                {/* Discount Badge */}
+                {product.compare_at_price && product.compare_at_price > product.price && (
+                    <div className="absolute top-2 right-2 z-20 bg-brand-terracotta text-brand-ivory text-[10px] font-bold px-2 py-0.5 uppercase tracking-wider font-sans">
+                        {Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)}% OFF
+                    </div>
+                )}
+                
                 <Image
                     src={product.image}
                     alt={product.name}
@@ -58,10 +65,10 @@ export default function ProductCard({ product, isBestSeller = false }: ProductCa
                     className="object-cover object-center group-hover/image:scale-105 transition-transform duration-500"
                     sizes="(max-width: 768px) 50vw, (max-width: 1200px) 50vw, 33vw"
                 />
-                <div className="absolute inset-0 bg-brand-black/5 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-brand-green/5 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300" />
                 {/* Quick Add hover button — desktop only */}
                 <button
-                    className="hidden md:block absolute bottom-4 left-4 right-4 text-[11px] font-bold uppercase tracking-widest bg-brand-white text-brand-black px-4 py-3 translate-y-4 opacity-0 group-hover/image:translate-y-0 group-hover/image:opacity-100 transition-all duration-300 hover:bg-brand-black hover:text-brand-white z-10"
+                    className="hidden md:block absolute bottom-4 left-4 right-4 text-[11px] font-bold uppercase tracking-widest bg-brand-ivory text-brand-text px-4 py-3 translate-y-4 opacity-0 group-hover/image:translate-y-0 group-hover/image:opacity-100 transition-all duration-300 hover:bg-brand-green hover:text-brand-ivory z-10 font-sans"
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -74,7 +81,7 @@ export default function ProductCard({ product, isBestSeller = false }: ProductCa
 
             {/* Mobile-only persistent Add to Cart button */}
             <button
-                className="md:hidden mx-2 mb-2.5 w-[calc(100%-1rem)] text-[10px] font-bold uppercase tracking-widest bg-brand-black text-brand-white py-2.5 hover:bg-brand-gray-dark transition-colors active:scale-95 transform"
+                className="md:hidden mx-2 mb-2.5 w-[calc(100%-1rem)] text-[10px] font-bold uppercase tracking-widest bg-brand-green text-brand-ivory py-2.5 hover:bg-brand-green-dark transition-colors active:scale-95 transform font-sans"
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -85,26 +92,33 @@ export default function ProductCard({ product, isBestSeller = false }: ProductCa
             </button>
 
             <div className="flex flex-col flex-1 px-2 md:px-4 pb-3 md:pb-4">
-                <p className="text-[10px] uppercase font-bold tracking-widest text-brand-gray-dark mb-2">
+                <p className="text-[10px] uppercase font-bold tracking-widest text-brand-muted mb-2 font-sans">
                     {product.category}
                 </p>
                 <Link href={`/product/${product.id}`} className="block mb-1">
-                    <h3 className="font-semibold text-sm leading-tight text-brand-black group-hover:underline underline-offset-4 decoration-1">
+                    <h3 className="font-semibold text-sm leading-tight text-brand-text group-hover:underline underline-offset-4 decoration-1">
                         {product.name}
                     </h3>
                 </Link>
-                <p className="text-[11px] text-brand-gray-dark leading-relaxed mb-2 line-clamp-2">
+                <p className="text-[11px] text-brand-muted leading-relaxed mb-2 line-clamp-2 font-sans">
                     {product.description}
                 </p>
 
                 {/* Star Rating */}
                 <StarRating />
 
-                <div className="mt-auto flex items-center justify-between pt-4 border-t border-brand-gray-dark/10">
-                    <span className="font-bold text-sm tracking-wide">₹{product.price}</span>
+                <div className="mt-auto flex items-center justify-between pt-4 border-t border-brand-border-light">
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm tracking-wide text-brand-text font-sans">₹{product.price}</span>
+                        {product.compare_at_price && product.compare_at_price > product.price && (
+                            <span className="text-[11px] font-medium text-brand-muted/50 line-through font-sans">
+                                ₹{product.compare_at_price}
+                            </span>
+                        )}
+                    </div>
                     <button
                         onClick={() => addItem(product, 1)}
-                        className="text-[10px] font-bold uppercase tracking-widest text-brand-gray-dark hover:text-brand-black transition-colors border-b border-brand-gray-dark/40 hover:border-brand-black pb-0.5"
+                        className="text-[10px] font-bold uppercase tracking-widest text-brand-muted hover:text-brand-green transition-colors border-b border-brand-border hover:border-brand-green pb-0.5 font-sans"
                     >
                         Add to Cart
                     </button>

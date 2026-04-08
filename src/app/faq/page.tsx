@@ -14,21 +14,21 @@ export default function FAQ() {
     ];
 
     return (
-        <div className="bg-brand-gray min-h-screen pb-24">
-            <header className="bg-brand-white py-24 px-6 border-b border-brand-gray-dark/10">
+        <div className="bg-brand-cream min-h-screen pb-24">
+            <header className="bg-brand-ivory py-20 md:py-28 px-6 border-b border-brand-border-light">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-5xl font-bold tracking-tighter uppercase mb-4">FAQ.</h1>
-                    <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed max-w-xl mx-auto">
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mb-4">FAQ.</h1>
+                    <p className="text-[13px] text-brand-muted font-medium leading-relaxed max-w-xl mx-auto font-sans">
                         Answers to common questions regarding our formulations, testing protocols, and shipping policies.
                     </p>
                 </div>
             </header>
 
-            <main className="max-w-3xl mx-auto px-6 mt-24 space-y-8">
+            <main className="max-w-3xl mx-auto px-6 mt-20 md:mt-28 space-y-8">
                 {faqs.map((faq, index) => (
-                    <div key={index} className="bg-brand-white p-8 border border-brand-gray-dark/10">
+                    <div key={index} className="bg-brand-ivory p-8 border border-brand-border-light">
                         <h3 className="text-sm font-bold tracking-widest uppercase mb-4">{faq.question}</h3>
-                        <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed">
+                        <p className="text-[13px] text-brand-muted font-medium leading-relaxed font-sans">
                             {faq.answer}
                         </p>
                     </div>

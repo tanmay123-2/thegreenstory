@@ -61,9 +61,9 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-brand-white border-b border-brand-gray-dark/10">
+      <header className="sticky top-0 z-50 w-full bg-brand-ivory border-b border-brand-border-light">
         {/* Announcement Bar */}
-        <div className="bg-brand-black text-brand-white text-[13px] text-center py-2.5 tracking-widest uppercase font-bold">
+        <div className="bg-brand-green text-brand-ivory text-[13px] text-center py-2.5 tracking-widest uppercase font-bold font-sans">
           A Bond With Nature
         </div>
 
@@ -73,7 +73,7 @@ export default function Header() {
             <button
               aria-label="Menu"
               onClick={() => setIsMobileMenuOpen(true)}
-              className="text-brand-black hover:opacity-70 transition-opacity"
+              className="text-brand-text hover:opacity-70 transition-opacity"
             >
               <Menu size={20} strokeWidth={1.5} />
             </button>
@@ -81,40 +81,40 @@ export default function Header() {
 
           {/* Logo */}
           <div className="flex-1 md:flex-none text-center md:text-left">
-            <Link href="/" className="text-xl font-bold tracking-tighter text-brand-black uppercase">
+            <Link href="/" className="text-xl font-bold tracking-tighter text-brand-green uppercase font-serif">
               The Green Story
             </Link>
           </div>
 
           {/* Navigation Links */}
-          <nav className="hidden md:flex flex-1 items-center justify-center gap-8 text-[13px] tracking-wide font-medium uppercase text-brand-black/90 h-full">
+          <nav className="hidden md:flex flex-1 items-center justify-center gap-8 text-[13px] tracking-wide font-medium uppercase text-brand-text/90 h-full font-sans">
             <div className="group relative h-full flex items-center">
-              <Link href="/shop" className="hover:text-brand-black transition-colors relative after:absolute after:-bottom-1 after:left-0 after:h-[1px] after:w-0 hover:after:w-full after:bg-brand-black after:transition-all">
+              <Link href="/shop" className="hover:text-brand-green transition-colors relative after:absolute after:-bottom-1 after:left-0 after:h-[1px] after:w-0 hover:after:w-full after:bg-brand-green after:transition-all">
                 Shop All
               </Link>
               {/* Mega Menu Dropdown */}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 w-[600px] bg-brand-white border border-brand-gray-dark/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50">
+              <div className="absolute top-full left-1/2 -translate-x-1/2 w-[600px] bg-brand-ivory border border-brand-border shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50">
                 <div className="flex p-8 gap-8">
                   <div className="flex-1">
-                    <h4 className="font-bold text-[11px] uppercase tracking-widest text-brand-gray-dark mb-4">Shop By Category</h4>
+                    <h4 className="font-bold text-[11px] uppercase tracking-widest text-brand-muted mb-4 font-sans">Shop By Category</h4>
                     <ul className="space-y-3">
                       {['Shampoos', 'Oils', 'Conditioners', 'Toners'].map(item => (
-                        <li key={item}><Link href={`/shop?category=${item.toLowerCase()}`} className="text-brand-black hover:opacity-70 transition-opacity capitalize">{item}</Link></li>
+                        <li key={item}><Link href={`/shop?category=${item.toLowerCase()}`} className="text-brand-text hover:text-brand-green transition-colors capitalize font-sans">{item}</Link></li>
                       ))}
                     </ul>
                   </div>
-                  <div className="flex-1 bg-brand-gray relative flex items-center justify-center overflow-hidden min-h-[150px]">
+                  <div className="flex-1 bg-brand-cream relative flex items-center justify-center overflow-hidden min-h-[150px]">
                     <div className="z-10 text-center p-4">
-                      <span className="text-[10px] font-bold uppercase tracking-widest bg-brand-white px-2 py-1 inline-block mb-2">New</span>
-                      <p className="text-[12px] font-bold">Discover our latest Ayurvedic blends.</p>
+                      <span className="text-[10px] font-bold uppercase tracking-widest bg-brand-gold text-brand-ivory px-2 py-1 inline-block mb-2 font-sans">New</span>
+                      <p className="text-[12px] font-bold font-sans">Discover our latest Ayurvedic blends.</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <Link href="/routine" className="hover:text-brand-black hover:opacity-70 transition-opacity flex items-center h-full">Build Routine</Link>
-            <Link href="/testimonials" className="hover:text-brand-black hover:opacity-70 transition-opacity">Reviews</Link>
-            <Link href="/contact" className="hover:text-brand-black hover:opacity-70 transition-opacity">Contact Us</Link>
+            <Link href="/routine" className="hover:text-brand-green transition-colors flex items-center h-full">Build Routine</Link>
+            <Link href="/testimonials" className="hover:text-brand-green transition-colors">Reviews</Link>
+            <Link href="/contact" className="hover:text-brand-green transition-colors">Contact Us</Link>
           </nav>
 
           {/* Icons */}
@@ -122,19 +122,19 @@ export default function Header() {
             <button
               id="search-toggle-button"
               aria-label="Search"
-              className="text-brand-black hover:opacity-70 transition-opacity"
+              className="text-brand-text hover:opacity-70 transition-opacity"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
             >
               {isSearchOpen ? <X size={20} strokeWidth={1.5} /> : <Search size={20} strokeWidth={1.5} />}
             </button>
             {user ? (
               <div className="hidden sm:flex items-center gap-4">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-brand-black/70">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-brand-muted font-sans">
                   {user.email?.split('@')[0]}
                 </span>
                 <Link
                   href="/orders"
-                  className="text-[10px] font-bold uppercase tracking-widest text-brand-gray-dark hover:text-brand-black transition-colors"
+                  className="text-[10px] font-bold uppercase tracking-widest text-brand-muted hover:text-brand-green transition-colors font-sans"
                 >
                   Orders
                 </Link>
@@ -143,32 +143,32 @@ export default function Header() {
                     await supabase.auth.signOut();
                     window.location.href = '/';
                   }}
-                  className="text-[10px] font-bold uppercase tracking-widest text-brand-gray-dark hover:text-brand-black transition-colors"
+                  className="text-[10px] font-bold uppercase tracking-widest text-brand-muted hover:text-brand-green transition-colors font-sans"
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <Link href="/register" aria-label="Account" className="hidden sm:block text-brand-black hover:opacity-70 transition-opacity">
+              <Link href="/register" aria-label="Account" className="hidden sm:block text-brand-text hover:opacity-70 transition-opacity">
                 <User size={20} strokeWidth={1.5} />
               </Link>
             )}
-            <Link href="/wishlist" aria-label="Wishlist" className="hidden sm:block text-brand-black hover:opacity-70 transition-opacity relative">
+            <Link href="/wishlist" aria-label="Wishlist" className="hidden sm:block text-brand-text hover:opacity-70 transition-opacity relative">
               <Heart size={20} strokeWidth={1.5} />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-brand-black text-brand-white text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-2 bg-brand-green text-brand-ivory text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-full flex items-center justify-center font-sans">
                   {wishlistCount}
                 </span>
               )}
             </Link>
             <button
               aria-label="Cart"
-              className="relative text-brand-black hover:opacity-70 transition-opacity"
+              className="relative text-brand-text hover:opacity-70 transition-opacity"
               onClick={() => setIsCartOpen(true)}
             >
               <ShoppingBag size={20} strokeWidth={1.5} />
               {itemCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-brand-black text-brand-white text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-2 bg-brand-green text-brand-ivory text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-full flex items-center justify-center font-sans">
                   {itemCount}
                 </span>
               )}
@@ -178,17 +178,17 @@ export default function Header() {
 
         {/* Search Bar Dropdown */}
         {isSearchOpen && (
-          <div ref={searchRef} className="absolute top-full left-0 w-full bg-brand-white border-b border-brand-gray-dark/10 p-4 shadow-lg animate-in slide-in-from-top-2">
+          <div ref={searchRef} className="absolute top-full left-0 w-full bg-brand-ivory border-b border-brand-border-light p-4 shadow-lg animate-in slide-in-from-top-2">
             <form onSubmit={handleSearch} className="max-w-3xl mx-auto relative">
               <input
                 type="text"
                 placeholder="Search for products, ingredients, or concerns..."
-                className="w-full border border-brand-gray-dark/20 rounded-none py-3 pl-4 pr-12 focus:outline-none focus:border-brand-black text-[13px] uppercase tracking-wider font-medium"
+                className="w-full border border-brand-border rounded-none py-3 pl-4 pr-12 focus:outline-none focus:border-brand-green text-[13px] uppercase tracking-wider font-medium bg-brand-ivory font-sans"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
               />
-              <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-black hover:opacity-70 transition-opacity">
+              <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-text hover:opacity-70 transition-opacity">
                 <Search size={20} strokeWidth={1.5} />
               </button>
             </form>

@@ -5,6 +5,7 @@ export interface Product {
     name: string;
     description: string;
     price: number;
+    compare_at_price?: number | null;
     image: string;
     category: string;
     concerns: string[];

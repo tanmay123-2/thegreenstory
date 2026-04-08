@@ -35,40 +35,40 @@ export default function Routine() {
     ];
 
     return (
-        <div className="bg-brand-gray min-h-screen">
-            <header className="bg-brand-white py-24 px-6 border-b border-brand-gray-dark/10">
+        <div className="bg-brand-cream min-h-screen">
+            <header className="bg-brand-ivory py-20 md:py-28 px-6 border-b border-brand-border-light">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-5xl font-bold tracking-tighter uppercase mb-4">The Clinical Routine.</h1>
-                    <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed max-w-xl mx-auto">
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase mb-4">The Clinical Routine.</h1>
+                    <p className="text-[13px] text-brand-muted font-medium leading-relaxed max-w-xl mx-auto font-sans">
                         Efficacy requires consistency. Follow these four foundational steps to optimize active ingredient delivery and maintain barrier health.
                     </p>
                 </div>
             </header>
 
-            <main className="max-w-4xl mx-auto px-6 py-24 space-y-16">
+            <main className="max-w-4xl mx-auto px-6 py-20 md:py-28 space-y-16">
                 {steps.map((step, index) => (
                     <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start">
-                        <div className="md:col-span-3 text-[10px] font-bold uppercase tracking-widest text-brand-gray-dark md:pt-2 border-b md:border-none border-brand-gray-dark/10 pb-2 md:pb-0">
+                        <div className="md:col-span-3 text-brand-gold font-bold text-[10px] uppercase tracking-widest md:pt-2 border-b md:border-none border-brand-border-light pb-2 md:pb-0 font-sans">
                             {step.number}
                         </div>
-                        <div className="md:col-span-9 pb-12 border-b border-brand-gray-dark/10 last:border-0">
+                        <div className="md:col-span-9 pb-12 border-b border-brand-border-light last:border-0">
                             <h2 className="text-3xl font-bold tracking-tighter uppercase mb-4">{step.name}</h2>
-                            <p className="text-[13px] text-brand-gray-dark font-medium leading-relaxed mb-6 max-w-2xl">
+                            <p className="text-[13px] text-brand-muted font-medium leading-relaxed mb-6 max-w-2xl font-sans">
                                 {step.description}
                             </p>
-                            <Link href="/shop" className="inline-block border-b border-brand-black pb-1 text-[11px] font-bold uppercase tracking-widest hover:opacity-70 transition-opacity">
+                            <Link href="/shop" className="inline-block border-b border-brand-green pb-1 text-[11px] font-bold uppercase tracking-widest hover:opacity-70 transition-opacity text-brand-green font-sans">
                                 {step.linkTitle}
                             </Link>
                         </div>
                     </div>
                 ))}
 
-                <div className="bg-brand-black text-brand-white p-12 mt-12 text-center">
+                <div className="bg-brand-green text-brand-ivory p-12 mt-12 text-center">
                     <h3 className="text-2xl font-bold tracking-tighter uppercase mb-4">Still Not Sure?</h3>
-                    <p className="text-[13px] text-brand-gray font-medium mb-8 max-w-md mx-auto leading-relaxed">
+                    <p className="text-[13px] text-brand-ivory/70 font-medium mb-8 max-w-md mx-auto leading-relaxed font-sans">
                         Reach out to our clinical formulation team for personalized advice based on your specific skin type and concerns.
                     </p>
-                    <Link href="/contact" className="bg-brand-white text-brand-black px-8 py-4 text-[13px] font-bold uppercase tracking-widest hover:bg-brand-gray transition-colors">
+                    <Link href="/contact" className="bg-brand-ivory text-brand-green px-8 py-4 text-[13px] font-bold uppercase tracking-widest hover:bg-brand-cream transition-colors font-sans">
                         Contact Support
                     </Link>
                 </div>

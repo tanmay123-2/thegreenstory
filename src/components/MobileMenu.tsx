@@ -64,7 +64,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 <>
                     {/* Backdrop */}
                     <motion.div
-                        className="fixed inset-0 bg-brand-black/50 z-50 md:hidden"
+                        className="fixed inset-0 bg-brand-text/40 backdrop-blur-sm z-50 md:hidden"
                         variants={overlayVariants}
                         initial="closed"
                         animate="open"
@@ -74,7 +74,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
                     {/* Menu Panel */}
                     <motion.div
-                        className="fixed top-0 left-0 w-4/5 sm:w-80 h-full bg-brand-white z-50 md:hidden shadow-2xl flex flex-col pt-16"
+                        className="fixed top-0 left-0 w-4/5 sm:w-80 h-full bg-brand-ivory z-50 md:hidden shadow-2xl flex flex-col pt-16"
                         variants={menuVariants}
                         initial="closed"
                         animate="open"
@@ -91,38 +91,38 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                         transition={{ duration: 0.2 }}
                                         className="h-full w-full absolute top-0 left-0 px-6 py-8"
                                     >
-                                        <nav className="flex flex-col gap-6 text-[15px] font-bold uppercase tracking-widest text-brand-black">
+                                        <nav className="flex flex-col gap-6 text-[15px] font-bold uppercase tracking-widest text-brand-text font-sans">
                                             <button
                                                 onClick={() => handleSubMenuClick('shop')}
-                                                className="flex justify-between items-center text-left py-2 hover:opacity-70 transition-opacity w-full"
+                                                className="flex justify-between items-center text-left py-2 hover:text-brand-green transition-colors w-full"
                                             >
                                                 Shop All
                                                 <ChevronRight size={18} />
                                             </button>
-                                            <Link href="/routine" onClick={onClose} className="py-2 hover:opacity-70 transition-opacity">
+                                            <Link href="/routine" onClick={onClose} className="py-2 hover:text-brand-green transition-colors">
                                                 Build Routine
                                             </Link>
-                                            <Link href="/testimonials" onClick={onClose} className="py-2 hover:opacity-70 transition-opacity">
+                                            <Link href="/testimonials" onClick={onClose} className="py-2 hover:text-brand-green transition-colors">
                                                 Reviews
                                             </Link>
-                                            <Link href="/contact" onClick={onClose} className="py-2 hover:opacity-70 transition-opacity">
+                                            <Link href="/contact" onClick={onClose} className="py-2 hover:text-brand-green transition-colors">
                                                 Contact Us
                                             </Link>
-                                            <div className="h-px bg-brand-gray-dark/10 my-4" />
-                                            <Link href="/wishlist" onClick={onClose} className="py-2 hover:opacity-70 transition-opacity text-[13px] text-brand-gray-dark">
+                                            <div className="h-px bg-brand-border my-4" />
+                                            <Link href="/wishlist" onClick={onClose} className="py-2 hover:text-brand-green transition-colors text-[13px] text-brand-muted">
                                                 Wishlist
                                             </Link>
                                             {user ? (
                                                 <>
-                                                    <Link href="/orders" onClick={onClose} className="py-2 hover:opacity-70 transition-opacity text-[13px] text-brand-gray-dark">
+                                                    <Link href="/orders" onClick={onClose} className="py-2 hover:text-brand-green transition-colors text-[13px] text-brand-muted">
                                                         Orders
                                                     </Link>
-                                                    <button onClick={handleLogout} className="text-left py-2 hover:opacity-70 transition-opacity text-[13px] text-brand-gray-dark uppercase font-bold tracking-widest">
+                                                    <button onClick={handleLogout} className="text-left py-2 hover:text-brand-green transition-colors text-[13px] text-brand-muted uppercase font-bold tracking-widest">
                                                         Logout
                                                     </button>
                                                 </>
                                             ) : (
-                                                <Link href="/register" onClick={onClose} className="py-2 hover:opacity-70 transition-opacity text-[13px] text-brand-gray-dark">
+                                                <Link href="/register" onClick={onClose} className="py-2 hover:text-brand-green transition-colors text-[13px] text-brand-muted">
                                                     My Account
                                                 </Link>
                                             )}
@@ -137,11 +137,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                         animate={{ x: 0 }}
                                         exit={{ x: "10%" }}
                                         transition={{ duration: 0.2 }}
-                                        className="h-full w-full absolute top-0 left-0 px-6 py-8 bg-brand-white"
+                                        className="h-full w-full absolute top-0 left-0 px-6 py-8 bg-brand-ivory"
                                     >
                                         <button
                                             onClick={() => handleSubMenuClick('main')}
-                                            className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-brand-gray-dark mb-8 hover:text-brand-black transition-colors"
+                                            className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-brand-muted mb-8 hover:text-brand-green transition-colors font-sans"
                                         >
                                             <ChevronLeft size={14} /> Back
                                         </button>
@@ -150,16 +150,16 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                             <Link
                                                 href="/shop"
                                                 onClick={onClose}
-                                                className="flex items-center justify-between w-full mb-5 pb-4 border-b border-brand-gray-dark/10 text-[14px] font-bold uppercase tracking-widest text-brand-black hover:opacity-70 transition-opacity"
+                                                className="flex items-center justify-between w-full mb-5 pb-4 border-b border-brand-border text-[14px] font-bold uppercase tracking-widest text-brand-text hover:text-brand-green transition-colors font-sans"
                                             >
                                                 Shop All Products
-                                                <span className="text-[10px] bg-brand-gray px-2 py-0.5 font-bold uppercase tracking-widest">All</span>
+                                                <span className="text-[10px] bg-brand-cream px-2 py-0.5 font-bold uppercase tracking-widest font-sans">All</span>
                                             </Link>
-                                            <h4 className="font-bold text-[11px] uppercase tracking-widest text-brand-gray-dark mb-4">By Category</h4>
-                                            <ul className="flex flex-col gap-4 text-[14px] font-bold uppercase tracking-widest">
+                                            <h4 className="font-bold text-[11px] uppercase tracking-widest text-brand-muted mb-4 font-sans">By Category</h4>
+                                            <ul className="flex flex-col gap-4 text-[14px] font-bold uppercase tracking-widest font-sans">
                                                 {['Shampoos', 'Oils', 'Conditioners', 'Toners'].map(item => (
                                                     <li key={item}>
-                                                        <Link href={`/shop?category=${item.toLowerCase()}`} onClick={onClose} className="hover:opacity-70 transition-opacity capitalize">
+                                                        <Link href={`/shop?category=${item.toLowerCase()}`} onClick={onClose} className="hover:text-brand-green transition-colors capitalize">
                                                             {item}
                                                         </Link>
                                                     </li>

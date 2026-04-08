@@ -14,7 +14,7 @@ export default function WishlistButton({ productId }: { productId: string }) {
                 e.stopPropagation();
                 toggleWishlist(productId);
             }}
-            className={`p-2 rounded-full z-20 ${wishlisted ? 'text-red-500' : 'text-brand-gray-dark hover:text-brand-black'} transition-colors`}
+            className={`p-2 rounded-full z-20 ${wishlisted ? 'text-brand-terracotta' : 'text-brand-muted hover:text-brand-text'} transition-colors`}
             aria-label="Toggle Wishlist"
         >
             <Heart size={20} fill={wishlisted ? 'currentColor' : 'none'} strokeWidth={1.5} />

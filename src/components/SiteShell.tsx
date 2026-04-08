@@ -5,6 +5,7 @@ import Header from './Header';
 import Footer from './Footer';
 import CartDrawer from './CartDrawer';
 import MobileBottomBar from './MobileBottomBar';
+import RouteProgressBar from './RouteProgressBar';
 import { ReactNode } from 'react';
 
 export default function SiteShell({ children }: { children: ReactNode }) {
@@ -17,6 +18,7 @@ export default function SiteShell({ children }: { children: ReactNode }) {
 
     return (
         <>
+            <RouteProgressBar />
             <Header />
             <CartDrawer />
             <main className="flex-grow pb-16 md:pb-0">{children}</main>

@@ -1,22 +1,58 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-black: #0E4724;
-  /* Deep forest green */
-  --color-brand-gray-dark: #2A4734;
-  /* Dark gray-green */
-  --color-brand-gray: #F2F7F4;
-  /* Light minty gray */
-  --color-brand-white: #ffffff;
+  /* ── Primary Brand Colors ──────────────────────────────────── */
+  --color-brand-green: #2D5A3D;
+  /* Warm botanical green (primary) */
+  --color-brand-green-dark: #1E3F2B;
+  /* Deeper green for hover states */
+
+  /* ── Neutral Warm Tones ────────────────────────────────────── */
+  --color-brand-cream: #F5F0E8;
+  /* Warm cream background */
+  --color-brand-ivory: #FDFBF7;
+  /* Soft ivory (replaces pure white) */
+  --color-brand-text: #1A1A18;
+  /* Warm near-black for body text */
+  --color-brand-muted: #6B5E53;
+  /* Warm muted text */
+  --color-brand-border: #D9D0C7;
+  /* Warm neutral borders */
+  --color-brand-border-light: #E8E0D8;
+  /* Lighter warm borders */
+
+  /* ── Accent Colors ─────────────────────────────────────────── */
+  --color-brand-gold: #C5A47E;
+  /* Gold / champagne for stars, badges, highlights */
+  --color-brand-gold-dark: #A88960;
+  /* Deeper gold for hover */
+  --color-brand-terracotta: #C4836A;
+  /* Warm terracotta for sale/discount badges */
+  --color-brand-blush: #E8D5CC;
+  /* Blush pink for subtle section accents */
+
+  /* ── Legacy aliases (for compatibility during migration) ──── */
+  --color-brand-black: #2D5A3D;
+  --color-brand-gray-dark: #6B5E53;
+  --color-brand-gray: #F5F0E8;
+  --color-brand-white: #FDFBF7;
 }
 
 @layer base {
 
   html,
   body {
-    @apply bg-brand-white text-brand-black antialiased selection:bg-brand-black selection:text-brand-white;
+    @apply bg-brand-ivory text-brand-text antialiased selection:bg-brand-green selection:text-brand-ivory;
     font-family: var(--font-inter), system-ui, sans-serif;
     min-height: 100vh;
+    scroll-behavior: smooth;
+  }
+
+  /* Serif font for headings */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif), Georgia, 'Times New Roman', serif;
   }
 }
 
@@ -24,8 +60,25 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  .font-serif {
+    font-family: var(--font-serif), Georgia, 'Times New Roman', serif;
+  }
+
+  .font-sans {
+    font-family: var(--font-inter), system-ui, sans-serif;
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
 }
 
+/* ── Ingredient Ticker ──────────────────────────────────────── */
 @keyframes ticker {
   0% {
     transform: translateX(0);
@@ -43,4 +96,63 @@
 
 .animate-ticker:hover {
   animation-play-state: paused;
+}
+
+/* ── Skeleton Shimmer ───────────────────────────────────────── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg,
+      var(--color-brand-cream) 25%,
+      var(--color-brand-border-light) 37%,
+      var(--color-brand-cream) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* ── Route Progress Bar ─────────────────────────────────────── */
+@keyframes progress-indeterminate {
+  0% {
+    width: 0%;
+    left: 0;
+  }
+
+  50% {
+    width: 70%;
+    left: 15%;
+  }
+
+  100% {
+    width: 100%;
+    left: 0;
+  }
+}
+
+.animate-progress {
+  animation: progress-indeterminate 1.2s ease-in-out infinite;
+}
+
+/* ── Toast slide-in ─────────────────────────────────────────── */
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-toast-in {
+  animation: toast-slide-in 0.3s ease-out;
 }
